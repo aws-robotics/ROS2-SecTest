@@ -104,18 +104,18 @@ LifecycleServiceClient::get_state(std::chrono::seconds time_out)
 
   if (future_status != std::future_status::ready) {
     RCLCPP_ERROR(
-      parent_node_->get_logger(), "Server time out while getting current state for node %s", target_node_name_);
+      parent_node_->get_logger(), "Server time out while getting current state for node %s", target_node_name_.c_str());
     return lifecycle_msgs::msg::State::PRIMARY_STATE_UNKNOWN;
   }
 
   // We have an succesful answer. So let's print the current state.
   if (future_result.get()) {
     RCLCPP_INFO(parent_node_->get_logger(), "Node %s has current state %s.",
-      target_node_name_, future_result.get()->current_state.label.c_str());
+      target_node_name_.c_str(), future_result.get()->current_state.label.c_str());
     return future_result.get()->current_state.id;
   } else {
     RCLCPP_ERROR(
-      parent_node_->get_logger(), "Failed to get current state for node %s", target_node_name_);
+      parent_node_->get_logger(), "Failed to get current state for node %s", target_node_name_.c_str());
     return lifecycle_msgs::msg::State::PRIMARY_STATE_UNKNOWN;
   }
 }
@@ -159,7 +159,7 @@ LifecycleServiceClient::change_state(std::uint8_t transition, std::chrono::secon
 
   if (future_status != std::future_status::ready) {
     RCLCPP_ERROR(
-      parent_node_->get_logger(), "Server time out while changing current state for node %s", target_node_name_);
+      parent_node_->get_logger(), "Server time out while changing current state for node %s", target_node_name_.c_str());
     return false;
   }
 

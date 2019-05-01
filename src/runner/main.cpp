@@ -3,7 +3,9 @@
 #include "ros_sec_test/runner/runner.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rcutils/logging_macros.h"
-
+#include "ros_sec_test/attacks/noop/component.hpp"
+#include "ros_sec_test/attacks/coms/teleop/component.hpp"
+#include "ros_sec_test/attacks/resources/disk/component.hpp"
 
 
 void run_script(std::shared_ptr<Runner> runner) {
@@ -21,7 +23,10 @@ int main(int argc, char * argv[])
   std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes;
   attack_nodes.push_back(
       std::make_shared<ros_sec_test::attacks::noop::Component>());
-
+  attack_nodes.push_back(
+    std::make_shared<ros_sec_test::attacks::coms::teleop::Component>());
+  attack_nodes.push_back(
+    std::make_shared<ros_sec_test::attacks::resources::disk::Component>());
   std::cout<<"Starting runner\n";
   rclcpp::executors::SingleThreadedExecutor exec;
   for (const auto node: attack_nodes) {

@@ -14,6 +14,8 @@
   <build_depend>lifecycle_msgs</build_depend>
   <build_depend>rclcpp_lifecycle</build_depend>
   <build_depend>class_loader</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+
 
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>rcutils</exec_depend>
@@ -21,6 +23,7 @@
   <exec_depend>lifecycle_msgs</exec_depend>
   <exec_depend>ros2run</exec_depend>
   <exec_depend>class_loader</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

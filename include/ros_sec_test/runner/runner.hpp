@@ -1,6 +1,5 @@
 #include <memory>
 
-#include "ros_sec_test/attacks/noop/component.hpp"
 //#include "ros_sec_test/attacks/resources/cpu/component.hpp"
 //#include "ros_sec_test/attacks/resources/disk/component.hpp"
 //#include "ros_sec_test/attacks/resources/memory/component.hpp"
