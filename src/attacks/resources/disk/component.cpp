@@ -70,7 +70,7 @@ Component::run_periodic_attack() const {
     //Get file size
     struct stat stat_buf;
     int rc = fstat(fd_, &stat_buf);
-
+    RCLCPP_INFO(get_logger(), "Current disk size %d", stat_buf.st_size);
     if (rc == 0) {
         //allocate an additonal 100MB
         posix_fallocate(fd_, stat_buf.st_size, 100*1024*1024);

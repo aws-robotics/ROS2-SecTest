@@ -11,8 +11,7 @@ public:
   LifecycleServiceClient(rclcpp::Node * parent_node, const std::string & target_node_name);
   void init();
   unsigned int get_state(std::chrono::seconds time_out=std::chrono::seconds(3));
-  bool change_state(std::uint8_t transition, std::chrono::seconds time_out=std::chrono::seconds(3));
-
+  bool change_state(std::uint8_t transition, std::chrono::seconds time_out=std::chrono::seconds(5));
 
 private:
   rclcpp::Node * parent_node_;

@@ -43,38 +43,7 @@ Component::on_activate(const rclcpp_lifecycle::State &) {
   // Log something
     RCLCPP_INFO(get_logger(), "on_activate() is called.");
     pub_->on_activate();
-    char key(' ');
-    std::shared_ptr<geometry_msgs::msg::Twist> twist = std::make_shared<geometry_msgs::msg::Twist>();
-    std::map<char, std::vector<float>> speedBindings
-    {
-      {'w', {1, 0}},
-      {'a', {0, 1}},
-      {'s', {-1, 0}},
-      {'d', {0, -1}},
-    };
-    int y = 0;
-    int th = 0;
-    printf("Enter commands\n");
-    while(true) {
-        //printf("Getting command\n");
-        key = get_char_();
-        //std::cout << "Received key " << key << "\n";
-        if (key == '\x03') {
-            printf("Exiting\n");
-            break;
-        } else {
-            if (speedBindings.count(key) == 1) {
-                y = speedBindings[key][0];
-                th = speedBindings[key][1];
-            } else {
-                //printf("Command is invalid\n");
-            }
-            twist->linear.y = y;
-            twist->angular.z = th;
-            pub_->publish(twist);
-        }
-
-    }
+    thread_ = std::thread([this] {run_();});
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
@@ -90,6 +59,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_cleanup(const rclcpp_lifecycle::State &) {
   // Log something
     pub_.reset();
+    thread_.join();
     RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
@@ -98,8 +68,45 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_shutdown(const rclcpp_lifecycle::State & state) {
   // Log something
     RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
+    thread_.join();
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
+
+void Component::run_() {
+    char key(' ');
+    std::shared_ptr<geometry_msgs::msg::Twist> twist = std::make_shared<geometry_msgs::msg::Twist>();
+    std::map<char, std::vector<float>> speedBindings
+    {
+      {'w', {1, 0}},
+      {'a', {0, 1}},
+      {'s', {-1, 0}},
+      {'d', {0, -1}},
+    };
+    int y = 0;
+    int th = 0;
+    printf("Enter commands\n");
+    while(true) {
+        printf("Getting command\n");
+        key = get_char_();
+        printf("Received key %c\n", char(key));
+        if (key == '\x03') {
+            printf("Exiting\n");
+            break;
+        } else {
+            if (speedBindings.count(key) == 1) {
+                y = speedBindings[key][0];
+                th = speedBindings[key][1];
+            } else {
+                printf("Command is invalid\n");
+            }
+            twist->linear.y = y;
+            twist->angular.z = th;
+            pub_->publish(twist);
+        }
+
+    }
+}
+
 int Component::get_char_(){
     //copied from https://github.com/methylDragon/teleop_twist_keyboard_cpp/blob/master/src/teleop_twist_keyboard.cpp
     int ch;

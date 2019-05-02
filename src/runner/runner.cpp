@@ -1,20 +1,12 @@
 #include "ros_sec_test/runner/runner.hpp"
 
-Runner::Runner(const std::string & node_name): Node(node_name, "", true){
+Runner::Runner(const std::string & node_name, std::shared_ptr<std::vector<std::string>> nodes):
+  Node(node_name, "", true), nodes_(nodes){
   //initialize_node_vector();
 }
 
 void Runner::spin() {
   std::cout<<"Running\n";
-/*
-  rclcpp::executors::MultiThreadedExecutor exec;
-  exec.add_node(this);
-  for (const auto node: attack_nodes_) {
-
-    exec.add_node(node->get_node_base_interface());
-  }
-  std::cout<<"Nodes added to executor\n";
-*/
   initialize_client_vector();
   std::cout<<"Client vector initialized\n";
   //Configure attacks
@@ -37,35 +29,31 @@ void Runner::spin() {
       return;
     }
   }
+  std::cout<<"Attacks Activated\n";
+  //Activate attacks
+  for (auto client: lc_clients_){
+    if (!client->change_state(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVE_SHUTDOWN)) {
+      return;
+    }
+    if (!client->get_state()) {
+      return;
+    }
+  }
+  std::cout<<"Attacks Shutdown\n";
 }
 
 void Runner::initialize_client_vector() {
-  lc_clients_.push_back(
-    std::make_shared<LifecycleServiceClient>(this, std::string("noop")));
-  lc_clients_.push_back(
-    std::make_shared<LifecycleServiceClient>(this, std::string("teleop")));
-  lc_clients_.push_back(
-    std::make_shared<LifecycleServiceClient>(this, std::string("disk_attacker")));
+  for (auto node_name: *nodes_) {
+    lc_clients_.push_back(
+      std::make_shared<LifecycleServiceClient>(this, node_name));
+  }
+  //lc_clients_.push_back(
+  //  std::make_shared<LifecycleServiceClient>(this, std::string("teleop")));
+  //lc_clients_.push_back(
+  //  std::make_shared<LifecycleServiceClient>(this, std::string("disk_attacker")));
 
   for (auto client: lc_clients_) {
     client->init();
   }
 }
-
-/*
-void Runner::initialize_node_vector() {
-  attack_nodes_.push_back(
-      std::make_shared<ros_sec_test::attacks::noop::Component>());
-/*
-  attack_nodes_.push_back(
-      std::make_shared<ros_sec_test::attacks::resources::cpu::Component>(
-          options_));
-  attack_nodes_.push_back(
-      std::make_shared<ros_sec_test::attacks::resources::disk::Component>(
-          options_));
-  attack_nodes_.push_back(
-      std::make_shared<ros_sec_test::attacks::resources::memory::Component>(
-          options_));
-*/
-//}
 

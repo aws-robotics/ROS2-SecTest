@@ -1,4 +1,5 @@
 #include <memory>
+#include <string>
 
 //#include "ros_sec_test/attacks/resources/cpu/component.hpp"
 //#include "ros_sec_test/attacks/resources/disk/component.hpp"
@@ -11,13 +12,14 @@
 class Runner: public rclcpp::Node
 {
 public:
-    Runner(const std::string &);
+    Runner(const std::string &, std::shared_ptr<std::vector<std::string>>);
     void spin();
     virtual void initialize_client_vector();
 protected:
     //virtual void initialize_node_vector();
 private:
     //rclcpp::NodeOptions options_;
+    std::shared_ptr<std::vector<std::string>> nodes_;
     std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes_;
     std::vector<std::shared_ptr<LifecycleServiceClient>> lc_clients_;
 };  

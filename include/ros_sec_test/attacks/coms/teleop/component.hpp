@@ -41,7 +41,9 @@ public:
 
 private:
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> pub_;
+  std::thread thread_;
   int get_char_();
+  void run_();
 };
 
 }  // namespace teleop
