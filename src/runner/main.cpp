@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
     exec.add_node(node->get_node_base_interface());
   }
   std::cout << "Nodes added to executor\n";
-  std::shared_ptr<Runner> runner = std::make_shared<Runner>("attack_runner", initialized_nodes);
+  std::shared_ptr<Runner> runner = std::make_shared<Runner>(initialized_nodes);
   exec.add_node(runner);
   std::shared_future<void> script = std::async(std::launch::async,
       std::bind(run_script, runner));
