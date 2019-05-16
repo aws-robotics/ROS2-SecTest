@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#ifndef ROS_SEC_TEST__ATTACKS_RESOURCES_DISK_COMPONENT_HPP_
+#define ROS_SEC_TEST__ATTACKS_RESOURCES_DISK_COMPONENT_HPP_
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -71,3 +73,5 @@ private:
 }  // namespace resources
 }  // namespace attacks
 }  // namespace ros_sec_test
+
+#endif  //! ROS_SEC_TEST__ATTACKS_RESOURCES_DISK_COMPONENT_HPP_
