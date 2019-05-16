@@ -37,7 +37,7 @@ Component::Component()
       true)) {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_configure(const rclcpp_lifecycle::State &)
+Component::on_configure(const rclcpp_lifecycle::State & /* state */)
 {
   std::cout << "on_configure called\n";
   RCLCPP_INFO(get_logger(), "on_configure() is called.");
@@ -47,7 +47,7 @@ Component::on_configure(const rclcpp_lifecycle::State &)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_activate(const rclcpp_lifecycle::State &)
+Component::on_activate(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_activate() is called.");
   fd_ = open("attack.dat", O_WRONLY | O_CREAT);
@@ -55,21 +55,21 @@ Component::on_activate(const rclcpp_lifecycle::State &)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_deactivate(const rclcpp_lifecycle::State &)
+Component::on_deactivate(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_deactivate() is called.");
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_cleanup(const rclcpp_lifecycle::State &)
+Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_shutdown(const rclcpp_lifecycle::State & state)
+Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
 {
   timer_.reset();
   RCLCPP_INFO(get_logger(), "on_shutdown() is called.");

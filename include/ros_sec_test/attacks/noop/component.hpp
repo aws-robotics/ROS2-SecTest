@@ -27,19 +27,19 @@ public:
   explicit Component();
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_configure(const rclcpp_lifecycle::State &) final;
+  on_configure(const rclcpp_lifecycle::State & /* state */) final;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_activate(const rclcpp_lifecycle::State &) final;
+  on_activate(const rclcpp_lifecycle::State & /* state */) final;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State &) final;
+  on_deactivate(const rclcpp_lifecycle::State & /* state */) final;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_cleanup(const rclcpp_lifecycle::State &) final;
+  on_cleanup(const rclcpp_lifecycle::State & /* state */) final;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_shutdown(const rclcpp_lifecycle::State & state) final;
+  on_shutdown(const rclcpp_lifecycle::State & /* state */ state) final;
 };
 
 

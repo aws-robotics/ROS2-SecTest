@@ -36,7 +36,7 @@ Component::Component()
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_configure(const rclcpp_lifecycle::State &)
+Component::on_configure(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_configure() is called.");
   rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
@@ -46,7 +46,7 @@ Component::on_configure(const rclcpp_lifecycle::State &)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_activate(const rclcpp_lifecycle::State &)
+Component::on_activate(const rclcpp_lifecycle::State & /* state */)
 {
   // Log something
   RCLCPP_INFO(get_logger(), "on_activate() is called.");
@@ -56,7 +56,7 @@ Component::on_activate(const rclcpp_lifecycle::State &)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_deactivate(const rclcpp_lifecycle::State &)
+Component::on_deactivate(const rclcpp_lifecycle::State & /* state */)
 {
   // Log something
   RCLCPP_INFO(get_logger(), "on_deactivate() is called.");
@@ -65,7 +65,7 @@ Component::on_deactivate(const rclcpp_lifecycle::State &)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_cleanup(const rclcpp_lifecycle::State &)
+Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
 {
   // Log something
   pub_.reset();
@@ -75,7 +75,7 @@ Component::on_cleanup(const rclcpp_lifecycle::State &)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_shutdown(const rclcpp_lifecycle::State & state)
+Component::on_shutdown(const rclcpp_lifecycle::State & /* state */ state)
 {
   // Log something
   RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
