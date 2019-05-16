@@ -35,35 +35,6 @@ using namespace std::chrono_literals;
 using ChangeStateSrv = lifecycle_msgs::srv::ChangeState;
 using GetStateSrv = lifecycle_msgs::srv::GetState;
 
-template<typename Request, class Rep, class Period>
-typename rclcpp::Client<Request>::SharedResponse call_once_ready(
-  rclcpp::Node * node,
-  rclcpp::Client<Request> * client,
-  typename rclcpp::Client<Request>::SharedRequest request,
-  const std::chrono::duration<Rep, Period> & time_out
-)
-{
-  if (!client->wait_for_service(time_out)) {
-    RCLCPP_ERROR(node->get_logger(), "Service %s is not available.",
-      client->get_service_name());
-    return typename rclcpp::Client<Request>::SharedResponse();
-  }
-  auto future_result = client->async_send_request(request);
-  auto future_status = wait_for_result(future_result, time_out);
-  if (future_status != std::future_status::ready) {
-    RCLCPP_ERROR(
-      node->get_logger(), "Server time out while calling service %s",
-      node->get_name());
-    return typename rclcpp::Client<Request>::SharedResponse();
-  }
-  if (future_result.get()) {
-    return future_result.get();
-  } else {
-    RCLCPP_ERROR(node->get_logger(), "Failed to call service %s", node->get_name());
-    return typename rclcpp::Client<Request>::SharedResponse();
-  }
-}
-
 static std::string build_service_name(
   const std::string & target_node_name,
   const std::string & topic_name)
@@ -101,7 +72,7 @@ unsigned
 LifecycleServiceClient::get_state(std::chrono::seconds time_out)
 {
   auto request = std::make_shared<GetStateSrv::Request>();
-  auto result = call_once_ready(parent_node_, client_get_state_.get(), request, time_out);
+  auto result = invoke_service_once_ready(parent_node_, client_get_state_.get(), request, time_out);
   return result->current_state.id;
 }
 
@@ -112,7 +83,8 @@ LifecycleServiceClient::change_state(
 {
   auto request = std::make_shared<ChangeStateSrv::Request>();
   request->transition.id = transition.id();
-  auto result = call_once_ready(parent_node_, client_change_state_.get(), request, time_out);
+  auto result = invoke_service_once_ready(parent_node_,
+      client_change_state_.get(), request, time_out);
   return !!result;
 }
 

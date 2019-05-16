@@ -17,6 +17,16 @@
 #include <chrono>
 #include <future>
 
+#include "rclcpp/client.hpp"
+#include "rclcpp/node.hpp"
+
+template<typename Request, class Rep, class Period>
+typename rclcpp::Client<Request>::SharedResponse invoke_service_once_ready(
+  rclcpp::Node * node,
+  rclcpp::Client<Request> * client,
+  typename rclcpp::Client<Request>::SharedRequest request,
+  const std::chrono::duration<Rep, Period> & time_out);
+
 template<typename FutureT, typename Rep, typename Period>
 std::future_status
 wait_for_result(
