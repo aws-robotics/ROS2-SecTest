@@ -26,9 +26,8 @@
 
 #include "rcutils/logging_macros.h"
 
-#include "ros_sec_test/runner/lifecycle_service_client.hpp"
-
 #include "utilities/client_utils.hpp"
+#include "utilities/lifecycle_service_client.hpp"
 #include "utilities/service_utils.hpp"
 
 using namespace std::chrono_literals;

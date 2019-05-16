@@ -17,7 +17,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rcutils/logging_macros.h"
-#include "ros_sec_test/runner/lifecycle_service_client.hpp"
+
+#include "utilities/lifecycle_service_client.hpp"
 
 class Runner : public rclcpp::Node
 {

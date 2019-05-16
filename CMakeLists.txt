@@ -70,17 +70,24 @@ if(NOT WIN32)
     "${ament_cmake_package_templates_ENVIRONMENT_HOOK_LIBRARY_PATH}")
 endif()
 
+add_library(
+    utilities
+    SHARED
+    src/utilities/lifecycle_service_client.cpp
+    src/utilities/service_utils.cpp
+)
+
 add_executable(
     runner
-    src/runner/lifecycle_service_client.cpp
     src/runner/main.cpp
     src/runner/runner.cpp
-    src/utilities/service_utils.cpp
-    )
+)
 target_link_libraries(runner 
     noop_component
     disk_component
-    teleop_component)
+    teleop_component
+    utilities
+)
 ament_target_dependencies(runner "rclcpp" "rclcpp_lifecycle")
 
 install(TARGETS

@@ -1,4 +1,4 @@
-#include "ros_sec_test/runner/runner.hpp"
+#include "runner/runner.hpp"
 
 Runner::Runner(const std::string & node_name, std::shared_ptr<std::vector<std::string>> nodes)
 : Node(node_name, "", rclcpp::NodeOptions().use_intra_process_comms(true)), nodes_(nodes)
