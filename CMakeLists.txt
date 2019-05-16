@@ -16,6 +16,7 @@ find_package(class_loader REQUIRED)
 find_package(geometry_msgs)
 find_package(lifecycle_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(rcutils REQUIRED)
 
@@ -37,7 +38,7 @@ function(custom_component target file_path component)
         "${rclcpp_LIBRARIES}"
         "${rclcpp_lifecycle_LIBRARIES}"
         "geometry_msgs")
-    rclcpp_register_node_plugins(${target} ${component})
+    rclcpp_components_register_nodes(${target} ${component})
 endfunction()
 
 custom_component(
