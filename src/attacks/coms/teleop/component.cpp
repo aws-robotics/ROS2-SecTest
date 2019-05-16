@@ -11,28 +11,25 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "ros_sec_test/attacks/coms/teleop/component.hpp"
+
+#include <termios.h>
+#include <unistd.h>
+
+#include <cstdio>
 #include <chrono>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <thread>
 
 #include "lifecycle_msgs/msg/transition.hpp"
-
 #include "rclcpp/rclcpp.hpp"
-
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
-
 #include "rcutils/logging_macros.h"
-
 #include "geometry_msgs/msg/twist.hpp"
 
-#include "ros_sec_test/attacks/coms/teleop/component.hpp"
-
-#include <stdio.h>
-#include <unistd.h>
-#include <termios.h>
-#include <map>
 
 namespace ros_sec_test
 {
@@ -114,7 +111,7 @@ void Component::run_()
   while (true) {
     printf("Getting command\n");
     key = get_char_();
-    printf("Received key %c\n", (char)key);
+    printf("Received key %c\n", static_cast<char>(key));
     if (key == '\x03') {
       printf("Exiting\n");
       break;
@@ -135,7 +132,7 @@ void Component::run_()
 
 int Component::get_char_()
 {
-  //copied from https://github.com/methylDragon/teleop_twist_keyboard_cpp/blob/master/src/teleop_twist_keyboard.cpp
+  // Copied from https://github.com/methylDragon/teleop_twist_keyboard_cpp/blob/master/src/teleop_twist_keyboard.cpp
   int ch;
   struct termios oldt;
   struct termios newt;
@@ -143,7 +140,7 @@ int Component::get_char_()
   tcgetattr(STDIN_FILENO, &oldt);
   newt = oldt;
 
-  //Make required changes and apply the settings
+  // Make required changes and apply the settings
   newt.c_lflag &= ~(ICANON | ECHO);
   newt.c_iflag |= IGNBRK;
   newt.c_iflag &= ~(INLCR | ICRNL | IXON | IXOFF);
@@ -159,8 +156,8 @@ int Component::get_char_()
 
   return ch;
 }
-}  //namespace teleop
-}  // namespace noop
+}  // namespace teleop
+}  // namespace coms
 }  // namespace attacks
 }  // namespace ros_sec_test
 

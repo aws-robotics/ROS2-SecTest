@@ -13,21 +13,10 @@
 // limitations under the License.
 #ifndef ROS_SEC_TEST__ATTACKS_NOOP_COMPONENT_HPP_
 #define ROS_SEC_TEST__ATTACKS_NOOP_COMPONENT_HPP_
-#include <chrono>
-#include <iostream>
-#include <memory>
-#include <string>
-#include <thread>
-
-#include "lifecycle_msgs/msg/transition.hpp"
-
-#include "rclcpp/rclcpp.hpp"
-
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
-
-#include "rcutils/logging_macros.h"
-
-#include "std_msgs/msg/string.hpp"
+#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
+#include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
+#include "rclcpp_lifecycle/state.hpp"
 
 namespace ros_sec_test
 {

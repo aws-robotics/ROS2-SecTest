@@ -13,21 +13,14 @@
 // limitations under the License.
 #ifndef ROS_SEC_TEST__ATTACKS_COMS_TELEOP_COMPONENT_HPP_
 #define ROS_SEC_TEST__ATTACKS_COMS_TELEOP_COMPONENT_HPP_
-#include <chrono>
-#include <iostream>
 #include <memory>
-#include <string>
 #include <thread>
 
-#include "lifecycle_msgs/msg/transition.hpp"
-
-#include "rclcpp/rclcpp.hpp"
-
-#include "rclcpp_lifecycle/lifecycle_node.hpp"
-
-#include "rcutils/logging_macros.h"
-
 #include "geometry_msgs/msg/twist.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
+#include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
+#include "rclcpp_lifecycle/state.hpp"
 
 namespace ros_sec_test
 {
@@ -47,19 +40,19 @@ public:
   Component & operator=(const Component &) = delete;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_configure(const rclcpp_lifecycle::State & /* state */) final;
+  on_configure(const rclcpp_lifecycle::State & state) final;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_activate(const rclcpp_lifecycle::State & /* state */) final;
+  on_activate(const rclcpp_lifecycle::State & state) final;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State & /* state */) final;
+  on_deactivate(const rclcpp_lifecycle::State & state) final;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_cleanup(const rclcpp_lifecycle::State & /* state */) final;
+  on_cleanup(const rclcpp_lifecycle::State & state) final;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_shutdown(const rclcpp_lifecycle::State & /* state */ state) final;
+  on_shutdown(const rclcpp_lifecycle::State & state) final;
 
 private:
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> pub_;
