@@ -11,6 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -28,13 +33,7 @@
 #include "rcutils/logging_macros.h"
 #include "ros_sec_test/attacks/resources/disk/component.hpp"
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 using namespace std::chrono_literals;
-
 
 namespace ros_sec_test
 {
@@ -46,8 +45,9 @@ namespace disk
 {
 
 Component::Component()
-: rclcpp_lifecycle::LifecycleNode("disk_attacker", "", rclcpp::NodeOptions().use_intra_process_comms(
-      true)) {}
+: rclcpp_lifecycle::LifecycleNode(
+    "disk_attacker", "", rclcpp::NodeOptions().use_intra_process_comms(
+    true)) {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_configure(const rclcpp_lifecycle::State & /* state */)
@@ -92,12 +92,12 @@ Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
 void
 Component::run_periodic_attack() const
 {
-  //Get file size
+  // Get file size
   struct stat stat_buf;
   int rc = fstat(fd_, &stat_buf);
   RCLCPP_INFO(get_logger(), "Current disk size %d", stat_buf.st_size);
   if (rc == 0) {
-    //allocate an additonal 100MB
+    // Allocate an additonal 100MB
     posix_fallocate(fd_, stat_buf.st_size, 100 * 1024 * 1024);
   }
   // we should stop the attack if the call fails.

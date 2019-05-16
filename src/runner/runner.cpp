@@ -13,6 +13,10 @@
 // limitations under the License.
 #include "runner/runner.hpp"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 namespace ros_sec_test
 {
 namespace runner
@@ -26,17 +30,17 @@ Runner::Runner(const std::string & node_name, std::shared_ptr<std::vector<std::s
 void Runner::spin()
 {
   initialize_client_vector();
-  for (auto & client: lc_clients_) {
+  for (auto & client : lc_clients_) {
     if (!client->configure() || !client->get_state()) {
       return;
     }
   }
-  for (auto & client: lc_clients_) {
+  for (auto & client : lc_clients_) {
     if (!client->activate() || !client->get_state()) {
       return;
     }
   }
-  for (auto & client: lc_clients_) {
+  for (auto & client : lc_clients_) {
     if (!client->shutdown() || !client->get_state()) {
       return;
     }
@@ -45,7 +49,7 @@ void Runner::spin()
 
 void Runner::initialize_client_vector()
 {
-  for (auto & node_name: *nodes_) {
+  for (auto & node_name : *nodes_) {
     lc_clients_.push_back(
       std::make_shared<LifecycleServiceClient>(this, node_name));
   }

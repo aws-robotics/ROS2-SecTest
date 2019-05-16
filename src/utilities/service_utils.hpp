@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef ROS_SEC_TEST__UTILITIES_SERVICE_UTILS_HPP_
-#define ROS_SEC_TEST__UTILITIES_SERVICE_UTILS_HPP_
+#ifndef UTILITIES__SERVICE_UTILS_HPP_
+#define UTILITIES__SERVICE_UTILS_HPP_
 
 #include <string>
 
@@ -24,7 +24,7 @@ namespace utilities
 std::string build_change_state_service_name(const std::string & target_node_name);
 std::string build_get_state_service_name(const std::string & target_node_name);
 
-}  // namespace ros_sec_test
 }  // namespace utilities
+}  // namespace ros_sec_test
 
-#endif  //! ROS_SEC_TEST__UTILITIES_SERVICE_UTILS_HPP_
+#endif  // UTILITIES__SERVICE_UTILS_HPP_

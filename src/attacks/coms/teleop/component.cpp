@@ -23,6 +23,8 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <vector>
+#include <utility>
 
 #include "lifecycle_msgs/msg/transition.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -126,7 +128,6 @@ void Component::run_()
       twist->angular.z = th;
       pub_->publish(std::move(twist));
     }
-
   }
 }
 

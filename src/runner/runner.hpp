@@ -11,10 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef ROS_SEC_TEST__RUNNER_RUNNER_HPP_
-#define ROS_SEC_TEST__RUNNER_RUNNER_HPP_
+#ifndef RUNNER__RUNNER_HPP_
+#define RUNNER__RUNNER_HPP_
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
@@ -47,4 +48,4 @@ private:
 }  // namespace runner
 }  // namespace ros_sec_test
 
-#endif  //! ROS_SEC_TEST__RUNNER_RUNNER_HPP_
+#endif  // RUNNER__RUNNER_HPP_

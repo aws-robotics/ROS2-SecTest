@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef ROS_SEC_TEST__UTILITIES_CLIENT_UTILS_HXX_
-#define ROS_SEC_TEST__UTILITIES_CLIENT_UTILS_HXX_
+#ifndef UTILITIES__CLIENT_UTILS_HXX_
+#define UTILITIES__CLIENT_UTILS_HXX_
 
 #include <chrono>
 #include <future>
@@ -71,4 +71,4 @@ wait_for_result(
   return status;
 }
 
-#endif  //! ROS_SEC_TEST__UTILITIES_CLIENT_UTILS_HXX_
+#endif  // UTILITIES__CLIENT_UTILS_HXX_

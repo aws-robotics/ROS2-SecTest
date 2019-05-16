@@ -11,8 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef ROS_SEC_TEST__ATTACKS_RESOURCES_DISK_COMPONENT_HPP_
-#define ROS_SEC_TEST__ATTACKS_RESOURCES_DISK_COMPONENT_HPP_
+#ifndef ROS_SEC_TEST__ATTACKS__RESOURCES__DISK__COMPONENT_HPP_
+#define ROS_SEC_TEST__ATTACKS__RESOURCES__DISK__COMPONENT_HPP_
+#include <memory>
+
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
@@ -55,10 +57,9 @@ private:
   std::shared_ptr<rclcpp::TimerBase> timer_;
 };
 
-
 }  // namespace disk
 }  // namespace resources
 }  // namespace attacks
 }  // namespace ros_sec_test
 
-#endif  //! ROS_SEC_TEST__ATTACKS_RESOURCES_DISK_COMPONENT_HPP_
+#endif  // ROS_SEC_TEST__ATTACKS__RESOURCES__DISK__COMPONENT_HPP_

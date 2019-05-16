@@ -43,6 +43,5 @@ std::string build_get_state_service_name(const std::string & target_node_name)
   return build_service_name(target_node_name, "get_state");
 }
 
-
-}  // namespace ros_sec_test
 }  // namespace utilities
+}  // namespace ros_sec_test

@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef ROS_SEC_TEST__ATTACKS_COMS_TELEOP_COMPONENT_HPP_
-#define ROS_SEC_TEST__ATTACKS_COMS_TELEOP_COMPONENT_HPP_
+#ifndef ROS_SEC_TEST__ATTACKS__COMS__TELEOP__COMPONENT_HPP_
+#define ROS_SEC_TEST__ATTACKS__COMS__TELEOP__COMPONENT_HPP_
 #include <memory>
 #include <thread>
 
@@ -62,8 +62,8 @@ private:
 };
 
 }  // namespace teleop
-}  // namespace noop
+}  // namespace coms
 }  // namespace attacks
 }  // namespace ros_sec_test
 
-#endif  //! ROS_SEC_TEST__ATTACKS_COMS_TELEOP_COMPONENT_HPP_
+#endif  // ROS_SEC_TEST__ATTACKS__COMS__TELEOP__COMPONENT_HPP_

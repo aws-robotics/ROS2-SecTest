@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef ROS_SEC_TEST__UTILITIES_LIFECYCLE_CLIENT_HPP_
-#define ROS_SEC_TEST__UTILITIES_LIFECYCLE_CLIENT_HPP_
+#ifndef UTILITIES__LIFECYCLE_SERVICE_CLIENT_HPP_
+#define UTILITIES__LIFECYCLE_SERVICE_CLIENT_HPP_
 #include <chrono>
 #include <memory>
 #include <string>
@@ -75,4 +75,4 @@ private:
   const rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr client_get_state_;
 };
 
-#endif  //! ROS_SEC_TEST__UTILITIES_LIFECYCLE_CLIENT_HPP_
+#endif  // UTILITIES__LIFECYCLE_SERVICE_CLIENT_HPP_

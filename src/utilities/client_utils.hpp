@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef ROS_SEC_TEST__UTILITIES_CLIENT_UTILS_HPP_
-#define ROS_SEC_TEST__UTILITIES_CLIENT_UTILS_HPP_
+#ifndef UTILITIES__CLIENT_UTILS_HPP_
+#define UTILITIES__CLIENT_UTILS_HPP_
 
 #include <chrono>
 #include <future>
@@ -34,4 +34,4 @@ wait_for_result(
   Period> & timeout_duration);
 
 #include "utilities/client_utils.hxx"
-#endif  //! ROS_SEC_TEST__UTILITIES_CLIENT_UTILS_HPP_
+#endif  // UTILITIES__CLIENT_UTILS_HPP_
