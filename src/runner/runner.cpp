@@ -3,7 +3,6 @@
 Runner::Runner(const std::string & node_name, std::shared_ptr<std::vector<std::string>> nodes)
 : Node(node_name, "", rclcpp::NodeOptions().use_intra_process_comms(true)), nodes_(nodes)
 {
-  //initialize_node_vector();
 }
 
 void Runner::spin()
@@ -50,10 +49,6 @@ void Runner::initialize_client_vector()
     lc_clients_.push_back(
       std::make_shared<LifecycleServiceClient>(this, node_name));
   }
-  //lc_clients_.push_back(
-  //  std::make_shared<LifecycleServiceClient>(this, std::string("teleop")));
-  //lc_clients_.push_back(
-  //  std::make_shared<LifecycleServiceClient>(this, std::string("disk_attacker")));
 
   for (auto client: lc_clients_) {
     client->init();
