@@ -23,8 +23,8 @@ foreach(FLAG ${FLAGS})
   check_cxx_compiler_flag(${FLAG} R${FLAG})
   if(${R${FLAG}})
     set(WARNING_CXX_FLAGS "${WARNING_CXX_FLAGS} ${FLAG}")
-  endif(${R${FLAG}})
-endforeach(FLAG ${FLAGS})
+  endif()
+endforeach()
 
 if(NOT DEFINED CXX_DISABLE_WERROR)
   set(WARNING_CXX_FLAGS "-Werror ${WARNING_CXX_FLAGS}")
@@ -38,7 +38,7 @@ include_directories(
     ${lifecycle_msgs_INCLUDE_DIRS}
     ${rclcpp_INCLUDE_DIRS}
     ${rclcpp_lifecycle_INCLUDE_DIRS}
-    )
+)
 
 
 function(custom_component target file_path component)
@@ -82,7 +82,8 @@ add_executable(
     src/runner/main.cpp
     src/runner/runner.cpp
 )
-target_link_libraries(runner 
+target_link_libraries(
+    runner
     noop_component
     disk_component
     teleop_component
