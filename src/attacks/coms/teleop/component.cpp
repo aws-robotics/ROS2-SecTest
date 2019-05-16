@@ -39,9 +39,8 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_configure(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_configure() is called.");
-  rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-  custom_qos_profile.depth = 10;
-  pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", custom_qos_profile);
+  const int queue_size = 10;
+  pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", rclcpp::QoS(rclcpp::KeepLast(queue_size)));
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
@@ -85,22 +84,22 @@ Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
 
 void Component::run_()
 {
-  char key(' ');
+  int key = ' ';
   std::unique_ptr<geometry_msgs::msg::Twist> twist = std::make_unique<geometry_msgs::msg::Twist>();
-  std::map<char, std::vector<float>> speedBindings
+  std::map<int, std::vector<float>> speedBindings
   {
     {'w', {1, 0}},
     {'a', {0, 1}},
     {'s', {-1, 0}},
     {'d', {0, -1}},
   };
-  int y = 0;
-  int th = 0;
+  float y = 0;
+  float th = 0;
   printf("Enter commands\n");
   while (true) {
     printf("Getting command\n");
     key = get_char_();
-    printf("Received key %c\n", char(key));
+    printf("Received key %c\n", (char)key);
     if (key == '\x03') {
       printf("Exiting\n");
       break;
