@@ -54,22 +54,12 @@ int main(int argc, char * argv[])
   std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes;
   std::shared_ptr<std::vector<std::string>> initialized_nodes =
     std::make_shared<std::vector<std::string>>();
-  //Intialize nodes
-  for (auto node_name: node_names) {
+  for (const auto & node_name: node_names) {
     if (attack_node_list.count(node_name) == 1) {
       attack_nodes.push_back(attack_node_list.at(node_name)());
       initialized_nodes->push_back(node_name);
     }
   }
-  /*
-  attack_nodes.push_back(
-      std::make_shared<ros_sec_test::attacks::noop::Component>());
-  attack_nodes.push_back(
-    std::make_shared<ros_sec_test::attacks::coms::teleop::Component>());
-  attack_nodes.push_back(
-    std::make_shared<ros_sec_test::attacks::resources::disk::Component>());
-
- */
   std::cout << "Starting runner\n";
   rclcpp::executors::SingleThreadedExecutor exec;
   for (const auto node: attack_nodes) {
