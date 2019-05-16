@@ -24,7 +24,7 @@ namespace ros_sec_test
 namespace runner
 {
 
-Runner::Runner(const std::string & node_name, std::shared_ptr<std::vector<std::string>> nodes)
+Runner::Runner(const std::string & node_name, const std::vector<std::string> & nodes)
 : Node(node_name, "", rclcpp::NodeOptions().use_intra_process_comms(true)), nodes_(nodes)
 {
 }

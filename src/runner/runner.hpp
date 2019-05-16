@@ -31,7 +31,7 @@ namespace runner
 class Runner : public rclcpp::Node
 {
 public:
-  Runner(const std::string &, std::shared_ptr<std::vector<std::string>>);
+  Runner(const std::string &, std::vector<std::string>);
 
   Runner(const Runner &) = delete;
   Runner & operator=(const Runner &) = delete;
@@ -40,7 +40,7 @@ public:
   virtual void initialize_client_vector();
 
 private:
-  std::shared_ptr<std::vector<std::string>> nodes_;
+  std::vector<std::string> nodes_;
   std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes_;
   std::vector<std::shared_ptr<utilities::LifecycleServiceClient>> lc_clients_;
 };
