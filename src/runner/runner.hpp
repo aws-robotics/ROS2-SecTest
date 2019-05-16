@@ -42,7 +42,7 @@ public:
 private:
   std::vector<std::string> nodes_;
   std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes_;
-  std::vector<std::shared_ptr<utilities::LifecycleServiceClient>> lc_clients_;
+  std::vector<std::shared_ptr<utilities::LifecycleServiceClient>> lifecycle_clients_;
 };
 
 }  // namespace runner

@@ -32,17 +32,17 @@ Runner::Runner(const std::string & node_name, const std::vector<std::string> & n
 void Runner::spin()
 {
   initialize_client_vector();
-  for (auto & client : lc_clients_) {
+  for (auto & client : lifecycle_clients_) {
     if (!client->configure() || !client->get_state()) {
       return;
     }
   }
-  for (auto & client : lc_clients_) {
+  for (auto & client : lifecycle_clients_) {
     if (!client->activate() || !client->get_state()) {
       return;
     }
   }
-  for (auto & client : lc_clients_) {
+  for (auto & client : lifecycle_clients_) {
     if (!client->shutdown() || !client->get_state()) {
       return;
     }
@@ -52,7 +52,7 @@ void Runner::spin()
 void Runner::initialize_client_vector()
 {
   for (auto & node_name : *nodes_) {
-    lc_clients_.push_back(
+    lifecycle_clients_.push_back(
       std::make_shared<LifecycleServiceClient>(this, node_name));
   }
 }
