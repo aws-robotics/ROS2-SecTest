@@ -7,10 +7,6 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
 find_package(ament_cmake REQUIRED)
 find_package(class_loader REQUIRED)
 find_package(geometry_msgs)
@@ -19,6 +15,21 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(rcutils REQUIRED)
+
+# Enable strict compiler flags if possible.
+include(CheckCXXCompilerFlag)
+set(FLAGS -pedantic -Wno-long-long -Wall -Wextra -Wcast-align -Wcast-qual -Wformat -Wwrite-strings -Wconversion -Wmissing-declarations)
+foreach(FLAG ${FLAGS})
+  check_cxx_compiler_flag(${FLAG} R${FLAG})
+  if(${R${FLAG}})
+    set(WARNING_CXX_FLAGS "${WARNING_CXX_FLAGS} ${FLAG}")
+  endif(${R${FLAG}})
+endforeach(FLAG ${FLAGS})
+
+if(NOT DEFINED CXX_DISABLE_WERROR)
+  set(WARNING_CXX_FLAGS "-Werror ${WARNING_CXX_FLAGS}")
+endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_CXX_FLAGS}")
 
 include_directories(
     include
