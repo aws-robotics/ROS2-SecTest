@@ -35,8 +35,10 @@ using namespace std::chrono_literals;
 using ChangeStateSrv = lifecycle_msgs::srv::ChangeState;
 using GetStateSrv = lifecycle_msgs::srv::GetState;
 
-using ros_sec_test::utilities::build_change_state_service_name;
-using ros_sec_test::utilities::build_get_state_service_name;
+namespace ros_sec_test
+{
+namespace utilities
+{
 
 LifecycleServiceClient::LifecycleServiceClient(
   rclcpp::Node * parent_node,
@@ -86,3 +88,6 @@ bool LifecycleServiceClient::shutdown()
   return change_state(rclcpp_lifecycle::Transition(lifecycle_msgs::msg::Transition::
            TRANSITION_CONFIGURE));
 }
+
+}  // namespace utilities
+}  // namespace ros_sec_test

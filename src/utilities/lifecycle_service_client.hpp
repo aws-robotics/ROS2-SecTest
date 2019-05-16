@@ -22,6 +22,11 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/transition.hpp"
 
+namespace ros_sec_test
+{
+namespace utilities
+{
+
 class LifecycleServiceClient
 {
 public:
@@ -74,5 +79,8 @@ private:
   const rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr client_change_state_;
   const rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr client_get_state_;
 };
+
+}  // namespace utilities
+}  // namespace ros_sec_test
 
 #endif  // UTILITIES__LIFECYCLE_SERVICE_CLIENT_HPP_

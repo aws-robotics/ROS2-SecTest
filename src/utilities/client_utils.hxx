@@ -22,6 +22,11 @@
 #include "rclcpp/node.hpp"
 #include "rclcpp/utilities.hpp"
 
+namespace ros_sec_test
+{
+namespace utilities
+{
+
 template<typename Request, class Rep, class Period>
 typename rclcpp::Client<Request>::SharedResponse invoke_service_once_ready(
   rclcpp::Node * node,
@@ -70,5 +75,8 @@ wait_for_result(
   } while (rclcpp::ok() && status != std::future_status::ready);
   return status;
 }
+
+}  // namespace utilities
+}  // namespace ros_sec_test
 
 #endif  // UTILITIES__CLIENT_UTILS_HXX_

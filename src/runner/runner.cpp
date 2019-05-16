@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+using LifecycleServiceClient = ros_sec_test::utilities::LifecycleServiceClient;
+
 namespace ros_sec_test
 {
 namespace runner

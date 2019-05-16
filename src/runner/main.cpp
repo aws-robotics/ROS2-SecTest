@@ -27,6 +27,7 @@
 #include "runner/runner.hpp"
 
 using ros_sec_test::runner::Runner;
+using ros_sec_test::utilities::LifecycleServiceClient;
 
 void run_script(std::shared_ptr<Runner> runner);
 
