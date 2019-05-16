@@ -22,6 +22,11 @@
 
 #include "utilities/lifecycle_service_client.hpp"
 
+namespace ros_sec_test
+{
+namespace runner
+{
+
 class Runner : public rclcpp::Node
 {
 public:
@@ -38,5 +43,8 @@ private:
   std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes_;
   std::vector<std::shared_ptr<LifecycleServiceClient>> lc_clients_;
 };
+
+}  // namespace runner
+}  // namespace ros_sec_test
 
 #endif  //! ROS_SEC_TEST__RUNNER_RUNNER_HPP_

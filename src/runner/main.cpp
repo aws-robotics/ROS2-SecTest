@@ -25,13 +25,14 @@
 
 #include "runner/runner.hpp"
 
+using ros_sec_test::runner::Runner;
+
 void run_script(std::shared_ptr<Runner> runner);
 
 void run_script(std::shared_ptr<Runner> runner)
 {
   runner->spin();
 }
-
 
 int main(int argc, char * argv[])
 {

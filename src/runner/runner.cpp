@@ -13,6 +13,11 @@
 // limitations under the License.
 #include "runner/runner.hpp"
 
+namespace ros_sec_test
+{
+namespace runner
+{
+
 Runner::Runner(const std::string & node_name, std::shared_ptr<std::vector<std::string>> nodes)
 : Node(node_name, "", rclcpp::NodeOptions().use_intra_process_comms(true)), nodes_(nodes)
 {
@@ -45,3 +50,6 @@ void Runner::initialize_client_vector()
       std::make_shared<LifecycleServiceClient>(this, node_name));
   }
 }
+
+}  // namespace runner
+}  // namespace ros_sec_test
