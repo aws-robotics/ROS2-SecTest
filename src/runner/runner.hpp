@@ -31,7 +31,7 @@ namespace runner
 class Runner : public rclcpp::Node
 {
 public:
-  Runner(const std::string &, std::vector<std::string>);
+  Runner(const std::string &, const std::vector<std::string> & node_names);
 
   Runner(const Runner &) = delete;
   Runner & operator=(const Runner &) = delete;

@@ -24,8 +24,8 @@ namespace ros_sec_test
 namespace runner
 {
 
-Runner::Runner(const std::string & node_name, const std::vector<std::string> & nodes)
-: Node(node_name, "", rclcpp::NodeOptions().use_intra_process_comms(true)), nodes_(nodes)
+Runner::Runner(const std::string & node_name, const std::vector<std::string> & node_names)
+: Node(node_name, "", rclcpp::NodeOptions().use_intra_process_comms(true)), nodes_(node_names)
 {
 }
 
@@ -51,7 +51,7 @@ void Runner::spin()
 
 void Runner::initialize_client_vector()
 {
-  for (auto & node_name : *nodes_) {
+  for (const auto & node_name : nodes_) {
     lifecycle_clients_.push_back(
       std::make_shared<LifecycleServiceClient>(this, node_name));
   }

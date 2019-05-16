@@ -55,12 +55,11 @@ int main(int argc, char * argv[])
     {"disk", std::make_shared<ros_sec_test::attacks::resources::disk::Component>}};
 
   std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes;
-  std::shared_ptr<std::vector<std::string>> initialized_nodes =
-    std::make_shared<std::vector<std::string>>();
+  std::vector<std::string> initialized_nodes;
   for (const auto & node_name : node_names) {
     if (attack_node_list.count(node_name) == 1) {
       attack_nodes.push_back(attack_node_list.at(node_name)());
-      initialized_nodes->push_back(node_name);
+      initialized_nodes.push_back(node_name);
     }
   }
   std::cout << "Starting runner\n";
