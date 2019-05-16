@@ -10,6 +10,7 @@
 #include "ros_sec_test/attacks/coms/teleop/component.hpp"
 #include "ros_sec_test/attacks/resources/disk/component.hpp"
 
+void run_script(std::shared_ptr<Runner> runner);
 
 void run_script(std::shared_ptr<Runner> runner)
 {
