@@ -29,33 +29,15 @@
 #include "ros_sec_test/runner/lifecycle_service_client.hpp"
 
 #include "utilities/client_utils.hpp"
+#include "utilities/service_utils.hpp"
 
 using namespace std::chrono_literals;
 
 using ChangeStateSrv = lifecycle_msgs::srv::ChangeState;
 using GetStateSrv = lifecycle_msgs::srv::GetState;
 
-static std::string build_service_name(
-  const std::string & target_node_name,
-  const std::string & topic_name)
-{
-  std::ostringstream ss;
-  ss << "/";
-  ss << target_node_name;
-  ss << "/";
-  ss << topic_name;
-  return ss.str();
-}
-
-static std::string build_change_state_service_name(const std::string & target_node_name)
-{
-  return build_service_name(target_node_name, "change_state");
-}
-
-static std::string build_get_state_service_name(const std::string & target_node_name)
-{
-  return build_service_name(target_node_name, "get_state");
-}
+using ros_sec_test::utilities::build_change_state_service_name;
+using ros_sec_test::utilities::build_get_state_service_name;
 
 LifecycleServiceClient::LifecycleServiceClient(
   rclcpp::Node * parent_node,

@@ -71,7 +71,12 @@ if(NOT WIN32)
 endif()
 
 add_executable(
-    runner src/runner/main.cpp src/runner/runner.cpp src/runner/lifecycle_service_client.cpp)
+    runner
+    src/runner/lifecycle_service_client.cpp
+    src/runner/main.cpp
+    src/runner/runner.cpp
+    src/utilities/service_utils.cpp
+    )
 target_link_libraries(runner 
     noop_component
     disk_component
