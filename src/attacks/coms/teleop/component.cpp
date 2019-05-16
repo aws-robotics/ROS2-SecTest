@@ -75,7 +75,7 @@ Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_shutdown(const rclcpp_lifecycle::State & /* state */ state)
+Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
 {
   // Log something
   RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
@@ -86,7 +86,7 @@ Component::on_shutdown(const rclcpp_lifecycle::State & /* state */ state)
 void Component::run_()
 {
   char key(' ');
-  std::shared_ptr<geometry_msgs::msg::Twist> twist = std::make_shared<geometry_msgs::msg::Twist>();
+  std::unique_ptr<geometry_msgs::msg::Twist> twist = std::make_unique<geometry_msgs::msg::Twist>();
   std::map<char, std::vector<float>> speedBindings
   {
     {'w', {1, 0}},
@@ -113,7 +113,7 @@ void Component::run_()
       }
       twist->linear.y = y;
       twist->angular.z = th;
-      pub_->publish(twist);
+      pub_->publish(std::move(twist));
     }
 
   }
