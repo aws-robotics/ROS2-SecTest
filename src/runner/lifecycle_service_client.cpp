@@ -48,8 +48,10 @@ wait_for_result(
   return status;
 }
 
-LifecycleServiceClient::LifecycleServiceClient(rclcpp::Node * parent_node, const std::string & target_node_name):
-parent_node_(parent_node), target_node_name_(target_node_name)
+LifecycleServiceClient::LifecycleServiceClient(
+  rclcpp::Node * parent_node,
+  const std::string & target_node_name)
+: parent_node_(parent_node), target_node_name_(target_node_name)
 {}
 
 void
@@ -104,7 +106,8 @@ LifecycleServiceClient::get_state(std::chrono::seconds time_out)
 
   if (future_status != std::future_status::ready) {
     RCLCPP_ERROR(
-      parent_node_->get_logger(), "Server time out while getting current state for node %s", target_node_name_.c_str());
+      parent_node_->get_logger(), "Server time out while getting current state for node %s",
+      target_node_name_.c_str());
     return lifecycle_msgs::msg::State::PRIMARY_STATE_UNKNOWN;
   }
 
@@ -115,7 +118,8 @@ LifecycleServiceClient::get_state(std::chrono::seconds time_out)
     return future_result.get()->current_state.id;
   } else {
     RCLCPP_ERROR(
-      parent_node_->get_logger(), "Failed to get current state for node %s", target_node_name_.c_str());
+      parent_node_->get_logger(), "Failed to get current state for node %s",
+      target_node_name_.c_str());
     return lifecycle_msgs::msg::State::PRIMARY_STATE_UNKNOWN;
   }
 }
@@ -159,18 +163,21 @@ LifecycleServiceClient::change_state(std::uint8_t transition, std::chrono::secon
 
   if (future_status != std::future_status::ready) {
     RCLCPP_ERROR(
-      parent_node_->get_logger(), "Server time out while changing current state for node %s", target_node_name_.c_str());
+      parent_node_->get_logger(), "Server time out while changing current state for node %s",
+      target_node_name_.c_str());
     return false;
   }
 
   // We have an answer, let's print our success.
   if (future_result.get()->success) {
     RCLCPP_INFO(
-      parent_node_->get_logger(), "Transition %d successfully triggered.", static_cast<int>(transition));
+      parent_node_->get_logger(), "Transition %d successfully triggered.",
+      static_cast<int>(transition));
     return true;
   } else {
     RCLCPP_WARN(
-      parent_node_->get_logger(), "Failed to trigger transition %u", static_cast<unsigned int>(transition));
+      parent_node_->get_logger(), "Failed to trigger transition %u",
+      static_cast<unsigned int>(transition));
     return false;
   }
 }

@@ -14,10 +14,14 @@
 
 #include "geometry_msgs/msg/twist.hpp"
 
-namespace ros_sec_test {
-namespace attacks {
-namespace coms {
-namespace teleop {
+namespace ros_sec_test
+{
+namespace attacks
+{
+namespace coms
+{
+namespace teleop
+{
 
 class Component : public rclcpp_lifecycle::LifecycleNode
 {

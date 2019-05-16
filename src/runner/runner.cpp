@@ -1,17 +1,19 @@
 #include "ros_sec_test/runner/runner.hpp"
 
-Runner::Runner(const std::string & node_name, std::shared_ptr<std::vector<std::string>> nodes):
-  Node(node_name, "", true), nodes_(nodes){
+Runner::Runner(const std::string & node_name, std::shared_ptr<std::vector<std::string>> nodes)
+: Node(node_name, "", true), nodes_(nodes)
+{
   //initialize_node_vector();
 }
 
-void Runner::spin() {
-  std::cout<<"Running\n";
+void Runner::spin()
+{
+  std::cout << "Running\n";
   initialize_client_vector();
-  std::cout<<"Client vector initialized\n";
+  std::cout << "Client vector initialized\n";
   //Configure attacks
 
-  for (auto client: lc_clients_){
+  for (auto client: lc_clients_) {
     if (!client->change_state(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE)) {
       return;
     }
@@ -19,9 +21,9 @@ void Runner::spin() {
       return;
     }
   }
-  std::cout<<"Attacks configured\n";
+  std::cout << "Attacks configured\n";
   //Activate attacks
-  for (auto client: lc_clients_){
+  for (auto client: lc_clients_) {
     if (!client->change_state(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE)) {
       return;
     }
@@ -29,9 +31,9 @@ void Runner::spin() {
       return;
     }
   }
-  std::cout<<"Attacks Activated\n";
+  std::cout << "Attacks Activated\n";
   //Activate attacks
-  for (auto client: lc_clients_){
+  for (auto client: lc_clients_) {
     if (!client->change_state(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVE_SHUTDOWN)) {
       return;
     }
@@ -39,10 +41,11 @@ void Runner::spin() {
       return;
     }
   }
-  std::cout<<"Attacks Shutdown\n";
+  std::cout << "Attacks Shutdown\n";
 }
 
-void Runner::initialize_client_vector() {
+void Runner::initialize_client_vector()
+{
   for (auto node_name: *nodes_) {
     lc_clients_.push_back(
       std::make_shared<LifecycleServiceClient>(this, node_name));
@@ -56,4 +59,3 @@ void Runner::initialize_client_vector() {
     client->init();
   }
 }
-

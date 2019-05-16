@@ -16,47 +16,55 @@
 
 #include "ros_sec_test/attacks/noop/component.hpp"
 
-namespace ros_sec_test {
-namespace attacks {
-namespace noop {
+namespace ros_sec_test
+{
+namespace attacks
+{
+namespace noop
+{
 
 Component::Component()
-    : rclcpp_lifecycle::LifecycleNode("noop", "", true) {}
+: rclcpp_lifecycle::LifecycleNode("noop", "", true) {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_configure(const rclcpp_lifecycle::State &) {
-    std::cout<<"on_configure called\n";
-    RCLCPP_INFO(get_logger(), "on_configure() is called.");
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+Component::on_configure(const rclcpp_lifecycle::State &)
+{
+  std::cout << "on_configure called\n";
+  RCLCPP_INFO(get_logger(), "on_configure() is called.");
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_activate(const rclcpp_lifecycle::State &) {
+Component::on_activate(const rclcpp_lifecycle::State &)
+{
   // Log something
-    RCLCPP_INFO(get_logger(), "on_activate() is called.");
+  RCLCPP_INFO(get_logger(), "on_activate() is called.");
 
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_deactivate(const rclcpp_lifecycle::State &) {
+Component::on_deactivate(const rclcpp_lifecycle::State &)
+{
   // Log something
-    RCLCPP_INFO(get_logger(), "on_deactivate() is called.");
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  RCLCPP_INFO(get_logger(), "on_deactivate() is called.");
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_cleanup(const rclcpp_lifecycle::State &) {
+Component::on_cleanup(const rclcpp_lifecycle::State &)
+{
   // Log something
-    RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_shutdown(const rclcpp_lifecycle::State & state) {
+Component::on_shutdown(const rclcpp_lifecycle::State & state)
+{
   // Log something
-    RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
-    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 

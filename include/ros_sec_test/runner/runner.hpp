@@ -9,17 +9,19 @@
 #include "rcutils/logging_macros.h"
 #include "ros_sec_test/runner/lifecycle_service_client.hpp"
 
-class Runner: public rclcpp::Node
+class Runner : public rclcpp::Node
 {
 public:
-    Runner(const std::string &, std::shared_ptr<std::vector<std::string>>);
-    void spin();
-    virtual void initialize_client_vector();
+  Runner(const std::string &, std::shared_ptr<std::vector<std::string>>);
+  void spin();
+  virtual void initialize_client_vector();
+
 protected:
-    //virtual void initialize_node_vector();
+  //virtual void initialize_node_vector();
+
 private:
-    //rclcpp::NodeOptions options_;
-    std::shared_ptr<std::vector<std::string>> nodes_;
-    std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes_;
-    std::vector<std::shared_ptr<LifecycleServiceClient>> lc_clients_;
-};  
+  //rclcpp::NodeOptions options_;
+  std::shared_ptr<std::vector<std::string>> nodes_;
+  std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes_;
+  std::vector<std::shared_ptr<LifecycleServiceClient>> lc_clients_;
+};

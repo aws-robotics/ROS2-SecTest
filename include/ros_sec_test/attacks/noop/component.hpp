@@ -14,9 +14,12 @@
 
 #include "std_msgs/msg/string.hpp"
 
-namespace ros_sec_test {
-namespace attacks {
-namespace noop {
+namespace ros_sec_test
+{
+namespace attacks
+{
+namespace noop
+{
 
 class Component : public rclcpp_lifecycle::LifecycleNode
 {

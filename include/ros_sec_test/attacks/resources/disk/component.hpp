@@ -16,10 +16,14 @@
 
 #include "std_msgs/msg/string.hpp"
 
-namespace ros_sec_test {
-namespace attacks {
-namespace resources {
-namespace disk {
+namespace ros_sec_test
+{
+namespace attacks
+{
+namespace resources
+{
+namespace disk
+{
 
 class Component : public rclcpp_lifecycle::LifecycleNode
 {
