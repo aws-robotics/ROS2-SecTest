@@ -9,6 +9,10 @@ class LifecycleServiceClient
 {
 public:
   LifecycleServiceClient(rclcpp::Node * parent_node, const std::string & target_node_name);
+
+  LifecycleServiceClient(const LifecycleServiceClient &) = delete;
+  LifecycleServiceClient & operator=(const LifecycleServiceClient &) = delete;
+
   void init();
   unsigned int get_state(std::chrono::seconds time_out = std::chrono::seconds(3));
   bool change_state(
@@ -20,5 +24,4 @@ private:
   std::string target_node_name_;
   std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::GetState>> client_get_state_;
   std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::ChangeState>> client_change_state_;
-
 };

@@ -10,6 +10,10 @@ class Runner : public rclcpp::Node
 {
 public:
   Runner(const std::string &, std::shared_ptr<std::vector<std::string>>);
+
+  Runner(const Runner &) = delete;
+  Runner & operator=(const Runner &) = delete;
+
   void spin();
   virtual void initialize_client_vector();
 

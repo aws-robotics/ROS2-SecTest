@@ -26,7 +26,10 @@ namespace teleop
 class Component : public rclcpp_lifecycle::LifecycleNode
 {
 public:
-  explicit Component();
+  Component();
+
+  Component(const Component&) = delete;
+  Component & operator=(const Component&) = delete;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State & /* state */) final;
