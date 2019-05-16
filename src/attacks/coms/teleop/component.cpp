@@ -53,7 +53,9 @@ Component::on_configure(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_configure() is called.");
   const int queue_size = 10;
-  pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", rclcpp::QoS(rclcpp::KeepLast(queue_size)));
+  pub_ =
+    this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel",
+      rclcpp::QoS(rclcpp::KeepLast(queue_size)));
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 

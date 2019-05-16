@@ -14,9 +14,11 @@
 #include <chrono>
 #include <memory>
 #include <string>
-#include "rclcpp/rclcpp.hpp"
+
 #include "lifecycle_msgs/srv/change_state.hpp"
 #include "lifecycle_msgs/srv/get_state.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/transition.hpp"
 
 class LifecycleServiceClient
 {
@@ -26,15 +28,47 @@ public:
   LifecycleServiceClient(const LifecycleServiceClient &) = delete;
   LifecycleServiceClient & operator=(const LifecycleServiceClient &) = delete;
 
-  void init();
+  /// Requests the current state of the node
+  /**
+   * In this function, we send a service request
+   * asking for the current state of the node
+   * lc_talker.
+   * If it does return within the given time_out,
+   * we return the current state of the node, if
+   * not, we return an unknown state.
+   * \param time_out Duration in seconds specifying
+   * how long we wait for a response before returning
+   * unknown state
+   */
   unsigned int get_state(std::chrono::seconds time_out = std::chrono::seconds(3));
-  bool change_state(
-    std::uint8_t transition,
-    std::chrono::seconds time_out = std::chrono::seconds(5));
+
+  bool activate();
+  bool configure();
+  bool shutdown();
 
 private:
+  /// Invokes a transition
+  /**
+   * We send a Service request and indicate
+   * that we want to invoke transition with
+   * the id "transition".
+   * By default, these transitions are
+   * - configure
+   * - activate
+   * - cleanup
+   * - shutdown
+   * \param transition id specifying which
+   * transition to invoke
+   * \param time_out Duration in seconds specifying
+   * how long we wait for a response before returning
+   * unknown state
+   */
+  bool change_state(
+    const rclcpp_lifecycle::Transition transition,
+    const std::chrono::seconds time_out = std::chrono::seconds(5));
+
+  const std::string target_node_name_;
   rclcpp::Node * parent_node_;
-  std::string target_node_name_;
-  std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::GetState>> client_get_state_;
-  std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::ChangeState>> client_change_state_;
+  const rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr client_change_state_;
+  const rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr client_get_state_;
 };
