@@ -33,7 +33,8 @@ namespace disk
 {
 
 Component::Component()
-: rclcpp_lifecycle::LifecycleNode("disk_attacker", "", true) {}
+: rclcpp_lifecycle::LifecycleNode("disk_attacker", "", rclcpp::NodeOptions().use_intra_process_comms(
+      true)) {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_configure(const rclcpp_lifecycle::State &)

@@ -31,7 +31,9 @@ namespace teleop
 {
 
 Component::Component()
-: rclcpp_lifecycle::LifecycleNode("teleop", "", true) {}
+: rclcpp_lifecycle::LifecycleNode("teleop", "", rclcpp::NodeOptions().use_intra_process_comms(true))
+{
+}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_configure(const rclcpp_lifecycle::State &)
