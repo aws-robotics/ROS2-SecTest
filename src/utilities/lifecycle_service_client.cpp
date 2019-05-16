@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "utilities/lifecycle_service_client.hpp"
 
 #include <chrono>
 #include <memory>
@@ -27,7 +28,6 @@
 #include "rcutils/logging_macros.h"
 
 #include "utilities/client_utils.hpp"
-#include "utilities/lifecycle_service_client.hpp"
 #include "utilities/service_utils.hpp"
 
 using namespace std::chrono_literals;

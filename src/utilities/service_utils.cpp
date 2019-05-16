@@ -11,10 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "utilities/service_utils.hpp"
+
 #include <sstream>
 #include <string>
-
-#include "utilities/service_utils.hpp"
 
 static std::string build_service_name(
   const std::string & target_node_name,

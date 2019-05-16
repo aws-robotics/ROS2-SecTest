@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "ros_sec_test/attacks/resources/disk/component.hpp"
+
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -23,15 +25,11 @@
 #include <thread>
 
 #include "lifecycle_msgs/msg/transition.hpp"
-
-#include "rclcpp/rclcpp.hpp"
 #include "rclcpp/publisher.hpp"
-
+#include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
-
 #include "rcutils/logging_macros.h"
-#include "ros_sec_test/attacks/resources/disk/component.hpp"
 
 using namespace std::chrono_literals;
 

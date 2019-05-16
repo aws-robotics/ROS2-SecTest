@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include "ros_sec_test/attacks/noop/component.hpp"
+
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -18,16 +20,10 @@
 #include <thread>
 
 #include "lifecycle_msgs/msg/transition.hpp"
-
 #include "rclcpp/rclcpp.hpp"
-
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
-
 #include "rcutils/logging_macros.h"
-
 #include "std_msgs/msg/string.hpp"
-
-#include "ros_sec_test/attacks/noop/component.hpp"
 
 namespace ros_sec_test
 {
