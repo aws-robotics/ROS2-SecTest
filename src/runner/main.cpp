@@ -28,12 +28,7 @@ using ros_sec_test::attacks::build_attack_node_from_name;
 using ros_sec_test::runner::Runner;
 using ros_sec_test::utilities::LifecycleServiceClient;
 
-void run_script(std::shared_ptr<Runner> runner);
-
-void run_script(std::shared_ptr<Runner> runner)
-{
-  runner->spin();
-}
+void run_script(Runner & runner);
 
 int main(int argc, char * argv[])
 {
@@ -62,10 +57,10 @@ int main(int argc, char * argv[])
     exec.add_node(node->get_node_base_interface());
   }
   std::cout << "Nodes added to executor\n";
-  std::shared_ptr<Runner> runner = std::make_shared<Runner>(initialized_nodes);
-  exec.add_node(runner->get_internal_node());
+  Runner runner(initialized_nodes);
+  exec.add_node(runner.get_internal_node());
   std::shared_future<void> script = std::async(std::launch::async,
-      std::bind(run_script, runner));
+      [&runner]() {runner.spin();});
 
   exec.spin_until_future_complete(script);
   rclcpp::shutdown();
