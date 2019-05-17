@@ -56,7 +56,6 @@ int main(int argc, char * argv[])
   for (const auto node : attack_nodes) {
     exec.add_node(node->get_node_base_interface());
   }
-  exec.add_node(runner.get_internal_node());
   std::shared_future<void> script = std::async(std::launch::async,
       [&runner]() {runner.spin();});
 

@@ -33,6 +33,7 @@ Runner::Runner(const std::vector<std::string> & node_names)
   nodes_(node_names),
   executor_()
 {
+  executor_.add_node(node_);
 }
 
 void Runner::spin()
