@@ -71,6 +71,18 @@ if(NOT WIN32)
 endif()
 
 add_library(
+    attacks
+    SHARED
+    src/attacks/factory_utils.cpp
+)
+target_link_libraries(
+    attacks
+    noop_component
+    disk_component
+    teleop_component
+)
+
+add_library(
     utilities
     SHARED
     src/utilities/lifecycle_service_client.cpp
@@ -84,9 +96,7 @@ add_executable(
 )
 target_link_libraries(
     runner
-    noop_component
-    disk_component
-    teleop_component
+    attacks
     utilities
 )
 ament_target_dependencies(runner "rclcpp" "rclcpp_lifecycle")
