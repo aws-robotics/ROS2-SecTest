@@ -24,15 +24,22 @@
 #include "rclcpp_lifecycle/state.hpp"
 #include "ros_sec_test/attacks/factory_utils.hpp"
 
+using rclcpp::ParameterValue;
 using LifecycleServiceClient = ros_sec_test::utilities::LifecycleServiceClient;
 using ros_sec_test::attacks::build_attack_node_from_name;
+
+static const char * const kAttackNodeNamesParameter = "attack_nodes";
+
+// By default, do not run any attack and print a message explaining to the user how
+// to use the node.
+static const std::vector<std::string> kDefaultAttackNodeNames = {};
 
 namespace ros_sec_test
 {
 namespace runner
 {
 
-Runner::Runner(const std::vector<std::string> & node_names)
+Runner::Runner()
 : node_(rclcpp::Node::make_shared("attacker_node", "",
     rclcpp::NodeOptions().use_intra_process_comms(true))),
   attack_nodes_(),
@@ -40,7 +47,24 @@ Runner::Runner(const std::vector<std::string> & node_names)
   logger_(rclcpp::get_logger("Runner"))
 {
   RCLCPP_INFO(logger_, "Initializing Runner");
+  node_->declare_parameter(kAttackNodeNamesParameter, ParameterValue(kDefaultAttackNodeNames));
   executor_.add_node(node_);
+  const auto node_names = retrieve_attack_nodes_names();
+  if (node_names.empty()) {
+    warn_user_no_attack_nodes_passed();
+  } else {
+    initialize_attack_nodes(node_names);
+  }
+}
+
+std::future<void> Runner::execute_all_attacks_async()
+{
+  return std::async(std::launch::async,
+           [this]() {start_and_stop_all_nodes();});
+}
+
+void Runner::initialize_attack_nodes(const std::vector<std::string> & node_names)
+{
   for (const auto & node_name : node_names) {
     auto attack_node = build_attack_node_from_name(node_name);
     if (attack_node) {
@@ -55,10 +79,9 @@ Runner::Runner(const std::vector<std::string> & node_names)
   }
 }
 
-std::future<void> Runner::execute_all_attacks_async()
+std::vector<std::string> Runner::retrieve_attack_nodes_names()
 {
-  return std::async(std::launch::async,
-           [this]() {start_and_stop_all_nodes();});
+  return node_->get_parameter(kAttackNodeNamesParameter).as_string_array();
 }
 
 void Runner::spin()
@@ -98,6 +121,24 @@ void Runner::start_and_stop_all_nodes()
       return;
     }
   }
+}
+
+void Runner::warn_user_no_attack_nodes_passed()
+{
+  RCLCPP_WARN(logger_,
+    "%s",
+    "No attack specified. This node will not no anything.\n"
+    "Please re-start this node and specify the list of attacks to execute:\n"
+    "$ ros2 run ros_sec_test runner __params:=params.yaml\n"
+    "\n"
+    "params.yaml:\n"
+    "attacker_node:\n"
+    "  ros__parameters:\n"
+    "    attack_nodes:\n"
+    "      - 'noop'\n"
+    "\n"
+    "The available attacks are 'coms/teleop', 'noop' and 'resources/disk'.\n"
+  );
 }
 
 }  // namespace runner

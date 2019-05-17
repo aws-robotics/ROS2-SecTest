@@ -23,8 +23,7 @@ int main(int argc, char * argv[])
 {
   setvbuf(stdout, NULL, _IONBF, BUFSIZ);  // Force flush of the stdout buffer.
   rclcpp::init(argc, argv);
-  // FIXME: the list of attacks should be made configurable using ROS 2 params.
-  Runner runner({"noop"});
+  Runner runner;
   runner.spin();
   rclcpp::shutdown();
   return EXIT_SUCCESS;

@@ -31,9 +31,9 @@ using DiskNode = ros_sec_test::attacks::resources::disk::Component;
 
 static const std::map<std::string, LifecycleNodeConstructorCallback>
 kNodeNameToFactoryCallback = {
-  {"disk", []() -> LifecycleNodeShPtr {return std::make_shared<DiskNode>();}},
+  {"coms/teleop", []() -> LifecycleNodeShPtr {return std::make_shared<TeleopNode>();}},
   {"noop", []() -> LifecycleNodeShPtr {return std::make_shared<NoopNode>();}},
-  {"teleop", []() -> LifecycleNodeShPtr {return std::make_shared<TeleopNode>();}},
+  {"resources/disk", []() -> LifecycleNodeShPtr {return std::make_shared<DiskNode>();}},
 };
 
 namespace ros_sec_test

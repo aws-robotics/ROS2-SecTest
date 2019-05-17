@@ -34,7 +34,7 @@ namespace runner
 class Runner
 {
 public:
-  explicit Runner(const std::vector<std::string> & node_names);
+  Runner();
 
   Runner(const Runner &) = delete;
   Runner & operator=(const Runner &) = delete;
@@ -47,8 +47,12 @@ private:
     rclcpp_lifecycle::LifecycleNode::SharedPtr node;
     std::shared_ptr<utilities::LifecycleServiceClient> lifecycle_client;
   };
+
   std::future<void> execute_all_attacks_async();
+  void initialize_attack_nodes(const std::vector<std::string> & node_names);
+  std::vector<std::string> retrieve_attack_nodes_names();
   void start_and_stop_all_nodes();
+  void warn_user_no_attack_nodes_passed();
 
   /// Create a separate node to send lifecycle requests.
   rclcpp::Node::SharedPtr node_;
