@@ -28,9 +28,17 @@ namespace ros_sec_test
 namespace utilities
 {
 
+/// Class wrapping the lifecycle_node services to get and set node states.
 class LifecycleServiceClient
 {
 public:
+  /// Initializes the object and construct all necessary service clients.
+  /**
+   * \param[in] parent_node Pointer to the node which will hold this client
+   * \param[in] target_node_name lifecycle_node to be controlled by this client
+   *
+   * CAVEAT: rclcpp::init() must be invoked before this object is constructed.
+   */
   LifecycleServiceClient(rclcpp::Node * parent_node, const std::string & target_node_name);
 
   LifecycleServiceClient(const LifecycleServiceClient &) = delete;
@@ -50,8 +58,22 @@ public:
    */
   rclcpp_lifecycle::State get_state(std::chrono::seconds time_out = std::chrono::seconds(3));
 
+  /// Try to switch the target node to the state "active".
+  /**
+   * \return true if the service call is successful, false otherwise
+   */
   bool activate();
+
+  /// Try to switch the target node to the state "configured".
+  /**
+   * \return true if the service call is successful, false otherwise
+   */
   bool configure();
+
+  /// Try to switch the target node to the state "shutting down".
+  /**
+   * \return true if the service call is successful, false otherwise
+   */
   bool shutdown();
 
 private:
@@ -75,7 +97,9 @@ private:
     const rclcpp_lifecycle::Transition transition,
     const std::chrono::seconds time_out = std::chrono::seconds(5));
 
+  /// Node controlled by this client.
   const std::string target_node_name_;
+
   rclcpp::Node * parent_node_;
   const rclcpp::Client<lifecycle_msgs::srv::ChangeState>::SharedPtr client_change_state_;
   const rclcpp::Client<lifecycle_msgs::srv::GetState>::SharedPtr client_get_state_;

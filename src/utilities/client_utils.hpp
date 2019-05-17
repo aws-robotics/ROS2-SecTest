@@ -25,6 +25,17 @@ namespace ros_sec_test
 namespace utilities
 {
 
+/// Wait for a service to exist and invoke it.
+/**
+ * \param[in] node Node invoking the service.
+ * \param[in] client Client invoking the service.
+ * \param[in] request Request object passed during service invocation.
+ * \param[in] time_out maximum duration this method will block.
+ *
+ * \tparam Request Service request type
+ * \tparam Rep Timeout argument Rep type (see STL documentation)
+ * \tparam Period Timeout argument Period type (see STL documentation)
+ */
 template<typename Request, class Rep, class Period>
 typename rclcpp::Client<Request>::SharedResponse invoke_service_once_ready(
   rclcpp::Node * node,
@@ -32,6 +43,18 @@ typename rclcpp::Client<Request>::SharedResponse invoke_service_once_ready(
   typename rclcpp::Client<Request>::SharedRequest request,
   const std::chrono::duration<Rep, Period> & time_out);
 
+/// Identical to std::future::wait_for except but waiting will be interrupting if ROS 2 shutdowns.
+/*
+ * Using std::future::wait_for has one inconvenient: if ROS 2 is shutting down, the future
+ * result may never be delivered and wait_for will hang until the timeout is reached.
+ * There is no way in the STL C++11 to wait on ROS 2 shutdown and a future result simultaneously.
+ *
+ * This method simulates this behavior by waking up the thread regularly to check on ROS 2 status.
+ *
+ * \param[in] future Future to wait on.
+ * \param[in] time_out maximum duration this method will block.
+ * \return Future status (same behavior than std::future::wait_for).
+ */
 template<typename FutureT, typename Rep, typename Period>
 std::future_status
 wait_for_result(
