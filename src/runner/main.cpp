@@ -11,44 +11,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include <memory>
+#include <cstdlib>
 #include <string>
-#include <thread>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
-
-#include "rclcpp/rclcpp.hpp"
-#include "rcutils/logging_macros.h"
 
 #include "runner/runner.hpp"
 
-using ros_sec_test::runner::Runner;
-using ros_sec_test::utilities::LifecycleServiceClient;
-
-void run_script(Runner & runner);
-
 int main(int argc, char * argv[])
 {
-  // Force flush of the stdout buffer.
-  setvbuf(stdout, NULL, _IONBF, BUFSIZ);
-
+  setvbuf(stdout, NULL, _IONBF, BUFSIZ);  // Force flush of the stdout buffer.
   rclcpp::init(argc, argv);
-  // Get set of attack to start
-  std::unordered_set<std::string> node_names;
-  for (int i = 1; i < argc; i++) {
-    node_names.insert(std::string(argv[i]));
-  }
-
-  std::vector<std::string> initialized_nodes;
-  for (const auto & node_name : node_names) {
-    initialized_nodes.push_back(node_name);
-  }
-  Runner runner(initialized_nodes);
-  rclcpp::executors::SingleThreadedExecutor & exec = runner.get_internal_executor();
-  std::shared_future<void> script = std::async(std::launch::async,
-      [&runner]() {runner.spin();});
-  exec.spin_until_future_complete(script);
+  // FIXME: this should be made configurable using ROS 2 parameters.
+  const std::vector<std::string> attack_node_names = {"noop"};
+  Runner runner(attack_node_names);
+  runner.spin();
   rclcpp::shutdown();
-  return 0;
+  return EXIT_SUCCESS;
 }
