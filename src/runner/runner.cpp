@@ -28,7 +28,9 @@ namespace runner
 {
 
 Runner::Runner(const std::vector<std::string> & node_names)
-: Node("attacker_node", "", rclcpp::NodeOptions().use_intra_process_comms(true)), nodes_(node_names)
+: node_(std::make_shared<rclcpp::Node>("attacker_node", "",
+    rclcpp::NodeOptions().use_intra_process_comms(true))),
+  nodes_(node_names)
 {
 }
 
@@ -62,7 +64,7 @@ void Runner::initialize_client_vector()
 {
   for (const auto & node_name : nodes_) {
     lifecycle_clients_.push_back(
-      std::make_shared<LifecycleServiceClient>(this, node_name));
+      std::make_shared<LifecycleServiceClient>(node_.get(), node_name));
   }
 }
 

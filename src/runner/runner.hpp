@@ -28,7 +28,7 @@ namespace ros_sec_test
 namespace runner
 {
 
-class Runner : public rclcpp::Node
+class Runner
 {
 public:
   explicit Runner(const std::vector<std::string> & node_names);
@@ -39,7 +39,15 @@ public:
   void spin();
   virtual void initialize_client_vector();
 
+  // FIXME: temporary. To be removed once the executor is placed inside this class.
+  rclcpp::Node::SharedPtr get_internal_node() const
+  {
+    return node_;
+  }
+
 private:
+  /// Create a separate node to send lifecycle requests.
+  rclcpp::Node::SharedPtr node_;
   std::vector<std::string> nodes_;
   std::vector<rclcpp_lifecycle::LifecycleNode::SharedPtr> attack_nodes_;
   std::vector<std::shared_ptr<utilities::LifecycleServiceClient>> lifecycle_clients_;
