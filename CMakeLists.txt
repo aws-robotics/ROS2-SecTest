@@ -102,6 +102,8 @@ target_link_libraries(
 ament_target_dependencies(runner "rclcpp" "rclcpp_lifecycle")
 
 install(TARGETS
+  attacks
+  utilities
   noop_component
   teleop_component
   disk_component
