@@ -1,0 +1,4 @@
+attacker_node:
+  ros__parameters:
+    attack_nodes:
+        - 'noop'

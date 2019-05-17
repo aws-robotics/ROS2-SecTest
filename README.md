@@ -27,7 +27,7 @@ source install/local_setup.sh
 
 Run the noop demo
 ```bash
-ros2 run ros_sec_test runner
+ros2 run ros_sec_test runner __params:=`ros2 pkg prefix ros_sec_test`/examples/params.yaml
 ```
 You should see something like the following output which demonstrates that
 the Noop node was configured and activated.
@@ -46,7 +46,8 @@ Attacks configured
 [INFO] [attack_runner]: Node ??;s has current state active.
 ```
 
+To enable or disable attacks, you can create you own params.yaml.
+
 ## License
 
 This library is licensed under the Apache 2.0 License. 
-=======
