@@ -51,13 +51,11 @@ int main(int argc, char * argv[])
       initialized_nodes.push_back(node_name);
     }
   }
-  std::cout << "Starting runner\n";
-  rclcpp::executors::SingleThreadedExecutor exec;
+  Runner runner(initialized_nodes);
+  rclcpp::executors::SingleThreadedExecutor & exec = runner.get_internal_executor();
   for (const auto node : attack_nodes) {
     exec.add_node(node->get_node_base_interface());
   }
-  std::cout << "Nodes added to executor\n";
-  Runner runner(initialized_nodes);
   exec.add_node(runner.get_internal_node());
   std::shared_future<void> script = std::async(std::launch::async,
       [&runner]() {runner.spin();});

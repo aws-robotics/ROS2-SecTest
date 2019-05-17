@@ -17,7 +17,8 @@
 #include <string>
 #include <vector>
 
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/executor.hpp"
+#include "rclcpp/node.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rcutils/logging_macros.h"
 
@@ -39,6 +40,13 @@ public:
   void spin();
   virtual void initialize_client_vector();
 
+  // FIXME: temporary. To be removed once the main does not contain executor logic.
+  rclcpp::executors::SingleThreadedExecutor &
+  get_internal_executor()
+  {
+    return executor_;
+  }
+
   // FIXME: temporary. To be removed once the executor is placed inside this class.
   rclcpp::Node::SharedPtr get_internal_node() const
   {
@@ -51,6 +59,7 @@ private:
   std::vector<std::string> nodes_;
   std::vector<rclcpp_lifecycle::LifecycleNode::SharedPtr> attack_nodes_;
   std::vector<std::shared_ptr<utilities::LifecycleServiceClient>> lifecycle_clients_;
+  rclcpp::executors::SingleThreadedExecutor executor_;
 };
 
 }  // namespace runner
