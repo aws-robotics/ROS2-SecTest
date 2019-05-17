@@ -41,13 +41,17 @@ public:
   void spin();
 
 private:
+  struct AttackNodeData
+  {
+    rclcpp_lifecycle::LifecycleNode::SharedPtr node;
+    std::shared_ptr<utilities::LifecycleServiceClient> lifecycle_client;
+  };
   std::future<void> execute_all_attacks_async();
   void start_and_stop_all_nodes();
 
   /// Create a separate node to send lifecycle requests.
   rclcpp::Node::SharedPtr node_;
-  std::vector<rclcpp_lifecycle::LifecycleNode::SharedPtr> attack_nodes_;
-  std::vector<std::shared_ptr<utilities::LifecycleServiceClient>> lifecycle_clients_;
+  std::vector<AttackNodeData> attack_nodes_;
   rclcpp::executors::SingleThreadedExecutor executor_;
 };
 
