@@ -33,7 +33,7 @@ namespace runner
 {
 
 Runner::Runner(const std::vector<std::string> & node_names)
-: node_(std::make_shared<rclcpp::Node>("attacker_node", "",
+: node_(rclcpp::Node::make_shared("attacker_node", "",
     rclcpp::NodeOptions().use_intra_process_comms(true))),
   attack_nodes_(),
   executor_(),
