@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "lifecycle_msgs/msg/state.hpp"
+#include "rclcpp/logger.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "ros_sec_test/attacks/factory_utils.hpp"
 
@@ -35,8 +36,10 @@ Runner::Runner(const std::vector<std::string> & node_names)
 : node_(std::make_shared<rclcpp::Node>("attacker_node", "",
     rclcpp::NodeOptions().use_intra_process_comms(true))),
   attack_nodes_(),
-  executor_()
+  executor_(),
+  logger_(rclcpp::get_logger("Runner"))
 {
+  RCLCPP_INFO(logger_, "Initializing Runner");
   executor_.add_node(node_);
   for (const auto & node_name : node_names) {
     auto attack_node = build_attack_node_from_name(node_name);
@@ -47,6 +50,7 @@ Runner::Runner(const std::vector<std::string> & node_names)
       };
       attack_nodes_.emplace_back(std::move(node_data));
       executor_.add_node(attack_node->get_node_base_interface());
+      RCLCPP_INFO(logger_, "Adding attack node '%s'", node_name.c_str());
     }
   }
 }
@@ -59,13 +63,16 @@ std::future<void> Runner::execute_all_attacks_async()
 
 void Runner::spin()
 {
+  RCLCPP_INFO(logger_, "Spinning started");
   std::shared_future<void> attack_result_future = execute_all_attacks_async();
   executor_.spin_until_future_complete(attack_result_future);
+  RCLCPP_INFO(logger_, "Spinning finished");
 }
 
 void Runner::start_and_stop_all_nodes()
 {
-  for (auto & node_data : attack_nodes_) {
+  for (const auto & node_data : attack_nodes_) {
+    RCLCPP_INFO(logger_, "Configuring attack node '%s'", node_data.node->get_name());
     auto & client = node_data.lifecycle_client;
     if (!client->configure() ||
       client->get_state().id() == lifecycle_msgs::msg::State::TRANSITION_STATE_CONFIGURING)
@@ -73,7 +80,8 @@ void Runner::start_and_stop_all_nodes()
       return;
     }
   }
-  for (auto & node_data : attack_nodes_) {
+  for (const auto & node_data : attack_nodes_) {
+    RCLCPP_INFO(logger_, "Enabling attack node '%s'", node_data.node->get_name());
     auto & client = node_data.lifecycle_client;
     if (!client->activate() ||
       client->get_state().id() == lifecycle_msgs::msg::State::TRANSITION_STATE_ACTIVATING)
@@ -81,7 +89,8 @@ void Runner::start_and_stop_all_nodes()
       return;
     }
   }
-  for (auto & node_data : attack_nodes_) {
+  for (const auto & node_data : attack_nodes_) {
+    RCLCPP_INFO(logger_, "Shutting-down attack node '%s'", node_data.node->get_name());
     auto & client = node_data.lifecycle_client;
     if (!client->shutdown() ||
       client->get_state().id() == lifecycle_msgs::msg::State::TRANSITION_STATE_SHUTTINGDOWN)

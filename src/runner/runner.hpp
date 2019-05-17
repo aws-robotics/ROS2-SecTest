@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "rclcpp/executor.hpp"
+#include "rclcpp/logger.hpp"
 #include "rclcpp/node.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rcutils/logging_macros.h"
@@ -53,6 +54,8 @@ private:
   rclcpp::Node::SharedPtr node_;
   std::vector<AttackNodeData> attack_nodes_;
   rclcpp::executors::SingleThreadedExecutor executor_;
+
+  rclcpp::Logger logger_;
 };
 
 }  // namespace runner
