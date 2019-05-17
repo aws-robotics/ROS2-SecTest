@@ -20,11 +20,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rcutils/logging_macros.h"
-#include "ros_sec_test/attacks/factory_utils.hpp"
 
 #include "runner/runner.hpp"
 
-using ros_sec_test::attacks::build_attack_node_from_name;
 using ros_sec_test::runner::Runner;
 using ros_sec_test::utilities::LifecycleServiceClient;
 
@@ -42,23 +40,14 @@ int main(int argc, char * argv[])
     node_names.insert(std::string(argv[i]));
   }
 
-  std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes;
   std::vector<std::string> initialized_nodes;
   for (const auto & node_name : node_names) {
-    auto attack_node = build_attack_node_from_name(node_name);
-    if (attack_node) {
-      attack_nodes.emplace_back(attack_node);
-      initialized_nodes.push_back(node_name);
-    }
+    initialized_nodes.push_back(node_name);
   }
   Runner runner(initialized_nodes);
   rclcpp::executors::SingleThreadedExecutor & exec = runner.get_internal_executor();
-  for (const auto node : attack_nodes) {
-    exec.add_node(node->get_node_base_interface());
-  }
   std::shared_future<void> script = std::async(std::launch::async,
       [&runner]() {runner.spin();});
-
   exec.spin_until_future_complete(script);
   rclcpp::shutdown();
   return 0;

@@ -19,8 +19,10 @@
 
 #include "lifecycle_msgs/msg/state.hpp"
 #include "rclcpp_lifecycle/state.hpp"
+#include "ros_sec_test/attacks/factory_utils.hpp"
 
 using LifecycleServiceClient = ros_sec_test::utilities::LifecycleServiceClient;
+using ros_sec_test::attacks::build_attack_node_from_name;
 
 namespace ros_sec_test
 {
@@ -34,6 +36,12 @@ Runner::Runner(const std::vector<std::string> & node_names)
   executor_()
 {
   executor_.add_node(node_);
+  for (const auto & node_name : node_names) {
+    auto attack_node = build_attack_node_from_name(node_name);
+    if (attack_node) {
+      executor_.add_node(attack_node->get_node_base_interface());
+    }
+  }
 }
 
 void Runner::spin()
