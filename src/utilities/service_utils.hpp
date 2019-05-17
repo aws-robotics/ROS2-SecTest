@@ -21,7 +21,10 @@ namespace ros_sec_test
 namespace utilities
 {
 
+/// Build change_state service name given a particular target node.
 std::string build_change_state_service_name(const std::string & target_node_name);
+
+/// Build get_state service name given a particular target node.
 std::string build_get_state_service_name(const std::string & target_node_name);
 
 }  // namespace utilities

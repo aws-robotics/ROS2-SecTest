@@ -22,6 +22,7 @@ namespace ros_sec_test
 namespace attacks
 {
 
+/// Instantiates a lifecycle attack node based on its name.
 rclcpp_lifecycle::LifecycleNode::SharedPtr build_attack_node_from_name(
   const std::string & attack_node_name);
 

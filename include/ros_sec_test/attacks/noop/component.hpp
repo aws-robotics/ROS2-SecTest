@@ -25,6 +25,11 @@ namespace attacks
 namespace noop
 {
 
+/// Attack node which does not do anything for testing purposes.
+/**
+ * If you would like to create your own attack, forking this no-op node
+ * is a good strategy.
+ */
 class Component : public rclcpp_lifecycle::LifecycleNode
 {
 public:

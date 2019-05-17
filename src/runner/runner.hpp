@@ -31,32 +31,74 @@ namespace ros_sec_test
 namespace runner
 {
 
+/// Main class containing the whole application logic, instantiated in main().
+/**
+ * Runner holds a ROS 2 node and one additional lifecycle_node per enabled attack node.
+ *
+ * The additional ROS 2 node (node_) is used to keep isolated from attack nodes the
+ * calls to the services managing the lifecycle nodes.
+ *
+ * Attack nodes are set a instantiation time and can *never* be changed.
+ *
+ * The only public method exposed by this class is spin() which starts, execute the attacks
+ * and stop all the nodes when needed.
+ */
 class Runner
 {
 public:
+  /// Instantiate all nodes without activating them.
+  /**
+   * CAVEAT: rclcpp::init() *must* be called before instantiating this object.
+   */
   Runner();
 
   Runner(const Runner &) = delete;
   Runner & operator=(const Runner &) = delete;
 
+  /// Starts, executes all attacks and shutdown all nodes.
   void spin();
 
 private:
+  /// Holds a shared pointer to a node and the associated lifecycle client.
   struct AttackNodeData
   {
     rclcpp_lifecycle::LifecycleNode::SharedPtr node;
+
+    /// Wraps lifecycle service calls in a conveninent interface.
     std::shared_ptr<utilities::LifecycleServiceClient> lifecycle_client;
   };
 
+  /// Execute all attacks synchronously.
+  /**
+   * Running attacks in a different thread allow us to spin from the main thread.
+   */
   std::future<void> execute_all_attacks_async();
+
+  /// Initialize the attack_nodes_ attributes. Invoked from the class constructor.
+  /**
+   * \param[in] node_names All attack nodes to be instantiated.
+   */
   void initialize_attack_nodes(const std::vector<std::string> & node_names);
+
+  /// Read the list of attacks to be run from the node parameter.
+  /**
+   * \return Names of all enabled attacks.
+   */
   std::vector<std::string> retrieve_attack_nodes_names();
+
+  /// Relies on lifecycle client to start and stop all attacks.
   void start_and_stop_all_nodes();
+
+  /// Log a message explaining that no attack have been specified and the runner will do nothing.
   void warn_user_no_attack_nodes_passed();
 
   /// Create a separate node to send lifecycle requests.
   rclcpp::Node::SharedPtr node_;
+
+  /// Contain all attack nodes information.
   std::vector<AttackNodeData> attack_nodes_;
+
+  /// Executor shared by all nodes.
   rclcpp::executors::SingleThreadedExecutor executor_;
 
   rclcpp::Logger logger_;

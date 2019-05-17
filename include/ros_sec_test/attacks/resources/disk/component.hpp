@@ -27,6 +27,16 @@ namespace resources
 namespace disk
 {
 
+/// This attack tries to fill the local disk with data.
+/**
+ * WARNING: this attack will try to fill your disk completely!
+ *
+ * The attack will slowly grow a single file by chunk of 100 MiB until
+ * the disk is full.
+ *
+ * When the node shutdowns, the node will attempt to delete the created
+ * file to restore the system to its initial state.
+ */
 class Component : public rclcpp_lifecycle::LifecycleNode
 {
 public:
@@ -50,8 +60,13 @@ public:
   on_shutdown(const rclcpp_lifecycle::State & /* state */ state) final;
 
 private:
+  /// Grow the file size by 100MiB.
   void run_periodic_attack() const;
+
+  /// File descriptor to the large file this attack tries to allocate.
   int fd_;
+
+  /// Timer controlling how often we increase the file size by 100MiB.
   rclcpp::TimerBase::SharedPtr timer_;
 };
 
