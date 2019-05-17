@@ -17,6 +17,8 @@
 
 #include "runner/runner.hpp"
 
+using ros_sec_test::runner::Runner;
+
 int main(int argc, char * argv[])
 {
   setvbuf(stdout, NULL, _IONBF, BUFSIZ);  // Force flush of the stdout buffer.
