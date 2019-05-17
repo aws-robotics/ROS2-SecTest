@@ -38,16 +38,10 @@ public:
   Runner(const Runner &) = delete;
   Runner & operator=(const Runner &) = delete;
 
-  std::future<void> execute_all_attacks_async();
-
-  // FIXME: temporary. To be removed once the main does not contain executor logic.
-  rclcpp::executors::SingleThreadedExecutor &
-  get_internal_executor()
-  {
-    return executor_;
-  }
+  void spin();
 
 private:
+  std::future<void> execute_all_attacks_async();
   void start_and_stop_all_nodes();
 
   /// Create a separate node to send lifecycle requests.

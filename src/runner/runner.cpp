@@ -53,6 +53,12 @@ std::future<void> Runner::execute_all_attacks_async()
            [this]() {start_and_stop_all_nodes();});
 }
 
+void Runner::spin()
+{
+  std::shared_future<void> attack_result_future = execute_all_attacks_async();
+  executor_.spin_until_future_complete(attack_result_future);
+}
+
 void Runner::start_and_stop_all_nodes()
 {
   for (auto & client : lifecycle_clients_) {
