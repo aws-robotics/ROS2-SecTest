@@ -13,8 +13,6 @@
 // limitations under the License.
 #ifndef ROS_SEC_TEST__ATTACKS__RESOURCES__DISK__COMPONENT_HPP_
 #define ROS_SEC_TEST__ATTACKS__RESOURCES__DISK__COMPONENT_HPP_
-#include <memory>
-
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
@@ -54,7 +52,7 @@ public:
 private:
   void run_periodic_attack() const;
   int fd_;
-  std::shared_ptr<rclcpp::TimerBase> timer_;
+  rclcpp::TimerBase::SharedPtr timer_;
 };
 
 }  // namespace disk

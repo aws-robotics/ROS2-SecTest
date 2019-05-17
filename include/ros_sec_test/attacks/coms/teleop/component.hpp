@@ -13,7 +13,6 @@
 // limitations under the License.
 #ifndef ROS_SEC_TEST__ATTACKS__COMS__TELEOP__COMPONENT_HPP_
 #define ROS_SEC_TEST__ATTACKS__COMS__TELEOP__COMPONENT_HPP_
-#include <memory>
 #include <thread>
 
 #include "geometry_msgs/msg/twist.hpp"
@@ -55,7 +54,7 @@ public:
   on_shutdown(const rclcpp_lifecycle::State & state) final;
 
 private:
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>> pub_;
+  rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>::SharedPtr pub_;
   std::thread thread_;
   int get_char_();
   void run_();

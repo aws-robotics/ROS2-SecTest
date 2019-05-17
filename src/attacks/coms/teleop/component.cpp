@@ -32,6 +32,7 @@
 #include "rcutils/logging_macros.h"
 #include "geometry_msgs/msg/twist.hpp"
 
+using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
 namespace ros_sec_test
 {
@@ -55,45 +56,41 @@ Component::on_configure(const rclcpp_lifecycle::State & /* state */)
   pub_ =
     this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel",
       rclcpp::QoS(rclcpp::KeepLast(queue_size)));
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_activate(const rclcpp_lifecycle::State & /* state */)
 {
-  // Log something
   RCLCPP_INFO(get_logger(), "on_activate() is called.");
   pub_->on_activate();
   thread_ = std::thread([this] {run_();});
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_deactivate(const rclcpp_lifecycle::State & /* state */)
 {
-  // Log something
   RCLCPP_INFO(get_logger(), "on_deactivate() is called.");
   pub_->on_deactivate();
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
 {
-  // Log something
   pub_.reset();
   thread_.join();
   RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
 {
-  // Log something
   RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
   thread_.join();
-  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+  return CallbackReturn::SUCCESS;
 }
 
 void Component::run_()
@@ -157,11 +154,11 @@ int Component::get_char_()
 
   return ch;
 }
+
 }  // namespace teleop
 }  // namespace coms
 }  // namespace attacks
 }  // namespace ros_sec_test
-
 
 #include "class_loader/register_macro.hpp"
 
