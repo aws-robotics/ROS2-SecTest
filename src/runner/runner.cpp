@@ -40,13 +40,14 @@ Runner::Runner(const std::vector<std::string> & node_names)
     auto attack_node = build_attack_node_from_name(node_name);
     if (attack_node) {
       executor_.add_node(attack_node->get_node_base_interface());
+      lifecycle_clients_.push_back(
+        std::make_shared<LifecycleServiceClient>(node_.get(), node_name));
     }
   }
 }
 
 void Runner::spin()
 {
-  initialize_client_vector();
   for (auto & client : lifecycle_clients_) {
     if (!client->configure() ||
       client->get_state().id() == lifecycle_msgs::msg::State::TRANSITION_STATE_CONFIGURING)
@@ -67,14 +68,6 @@ void Runner::spin()
     {
       return;
     }
-  }
-}
-
-void Runner::initialize_client_vector()
-{
-  for (const auto & node_name : nodes_) {
-    lifecycle_clients_.push_back(
-      std::make_shared<LifecycleServiceClient>(node_.get(), node_name));
   }
 }
 

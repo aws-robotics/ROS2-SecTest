@@ -38,7 +38,6 @@ public:
   Runner & operator=(const Runner &) = delete;
 
   void spin();
-  virtual void initialize_client_vector();
 
   // FIXME: temporary. To be removed once the main does not contain executor logic.
   rclcpp::executors::SingleThreadedExecutor &
