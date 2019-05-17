@@ -20,12 +20,11 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rcutils/logging_macros.h"
-#include "ros_sec_test/attacks/coms/teleop/component.hpp"
-#include "ros_sec_test/attacks/noop/component.hpp"
-#include "ros_sec_test/attacks/resources/disk/component.hpp"
+#include "ros_sec_test/attacks/factory_utils.hpp"
 
 #include "runner/runner.hpp"
 
+using ros_sec_test::attacks::build_attack_node_from_name;
 using ros_sec_test::runner::Runner;
 using ros_sec_test::utilities::LifecycleServiceClient;
 
@@ -48,17 +47,12 @@ int main(int argc, char * argv[])
     node_names.insert(std::string(argv[i]));
   }
 
-  std::unordered_map<std::string,
-    std::function<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>()>> attack_node_list = {
-    {"noop", std::make_shared<ros_sec_test::attacks::noop::Component>},
-    {"teleop", std::make_shared<ros_sec_test::attacks::coms::teleop::Component>},
-    {"disk", std::make_shared<ros_sec_test::attacks::resources::disk::Component>}};
-
   std::vector<std::shared_ptr<rclcpp_lifecycle::LifecycleNode>> attack_nodes;
   std::vector<std::string> initialized_nodes;
   for (const auto & node_name : node_names) {
-    if (attack_node_list.count(node_name) == 1) {
-      attack_nodes.push_back(attack_node_list.at(node_name)());
+    auto attack_node = build_attack_node_from_name(node_name);
+    if (attack_node) {
+      attack_nodes.emplace_back(attack_node);
       initialized_nodes.push_back(node_name);
     }
   }
