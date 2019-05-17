@@ -38,11 +38,22 @@ public:
   Runner & operator=(const Runner &) = delete;
 
   void spin();
+  virtual void initialize_client_vector();
+
+  // FIXME: temporary. To be removed once the main does not contain executor logic.
+  rclcpp::executors::SingleThreadedExecutor &
+  get_internal_executor()
+  {
+    return executor_;
+  }
+
+  // FIXME: temporary. To be removed once the executor is placed inside this class.
+  rclcpp::Node::SharedPtr get_internal_node() const
+  {
+    return node_;
+  }
 
 private:
-  virtual void initialize_client_vector();
-  void start_and_stop_all_nodes();
-
   /// Create a separate node to send lifecycle requests.
   rclcpp::Node::SharedPtr node_;
   std::vector<std::string> nodes_;

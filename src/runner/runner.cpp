@@ -13,7 +13,6 @@
 // limitations under the License.
 #include "runner/runner.hpp"
 
-#include <future>
 #include <memory>
 #include <string>
 #include <vector>
@@ -45,23 +44,7 @@ Runner::Runner(const std::vector<std::string> & node_names)
   }
 }
 
-void Runner::initialize_client_vector()
-{
-  for (const auto & node_name : nodes_) {
-    lifecycle_clients_.push_back(
-      std::make_shared<LifecycleServiceClient>(node_.get(), node_name));
-  }
-}
-
 void Runner::spin()
-{
-  std::shared_future<void> script = std::async(std::launch::async, [this]() {
-        start_and_stop_all_nodes();
-      });
-  executor_.spin_until_future_complete(script);
-}
-
-void Runner::start_and_stop_all_nodes()
 {
   initialize_client_vector();
   for (auto & client : lifecycle_clients_) {
@@ -84,6 +67,14 @@ void Runner::start_and_stop_all_nodes()
     {
       return;
     }
+  }
+}
+
+void Runner::initialize_client_vector()
+{
+  for (const auto & node_name : nodes_) {
+    lifecycle_clients_.push_back(
+      std::make_shared<LifecycleServiceClient>(node_.get(), node_name));
   }
 }
 
