@@ -51,12 +51,12 @@ LifecycleServiceClient::LifecycleServiceClient(
       target_node_name)))
 {}
 
-unsigned
+rclcpp_lifecycle::State
 LifecycleServiceClient::get_state(std::chrono::seconds time_out)
 {
   auto request = std::make_shared<GetStateSrv::Request>();
   auto result = invoke_service_once_ready(parent_node_, client_get_state_.get(), request, time_out);
-  return result->current_state.id;
+  return rclcpp_lifecycle::State(result->current_state.id, result->current_state.label);
 }
 
 bool

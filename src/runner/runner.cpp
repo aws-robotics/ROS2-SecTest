@@ -17,6 +17,9 @@
 #include <string>
 #include <vector>
 
+#include "lifecycle_msgs/msg/state.hpp"
+#include "rclcpp_lifecycle/state.hpp"
+
 using LifecycleServiceClient = ros_sec_test::utilities::LifecycleServiceClient;
 
 namespace ros_sec_test
@@ -33,17 +36,23 @@ void Runner::spin()
 {
   initialize_client_vector();
   for (auto & client : lifecycle_clients_) {
-    if (!client->configure() || !client->get_state()) {
+    if (!client->configure() ||
+      client->get_state().id() == lifecycle_msgs::msg::State::TRANSITION_STATE_CONFIGURING)
+    {
       return;
     }
   }
   for (auto & client : lifecycle_clients_) {
-    if (!client->activate() || !client->get_state()) {
+    if (!client->activate() ||
+      client->get_state().id() == lifecycle_msgs::msg::State::TRANSITION_STATE_ACTIVATING)
+    {
       return;
     }
   }
   for (auto & client : lifecycle_clients_) {
-    if (!client->shutdown() || !client->get_state()) {
+    if (!client->shutdown() ||
+      client->get_state().id() == lifecycle_msgs::msg::State::TRANSITION_STATE_SHUTTINGDOWN)
+    {
       return;
     }
   }

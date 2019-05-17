@@ -21,6 +21,7 @@
 #include "lifecycle_msgs/srv/get_state.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/transition.hpp"
+#include "rclcpp_lifecycle/state.hpp"
 
 namespace ros_sec_test
 {
@@ -47,7 +48,7 @@ public:
    * how long we wait for a response before returning
    * unknown state
    */
-  unsigned int get_state(std::chrono::seconds time_out = std::chrono::seconds(3));
+  rclcpp_lifecycle::State get_state(std::chrono::seconds time_out = std::chrono::seconds(3));
 
   bool activate();
   bool configure();
