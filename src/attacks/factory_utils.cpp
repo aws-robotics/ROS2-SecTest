@@ -18,7 +18,6 @@
 #include <memory>
 #include <string>
 
-#include "ros_sec_test/attacks/coms/teleop/component.hpp"
 #include "ros_sec_test/attacks/noop/component.hpp"
 #include "ros_sec_test/attacks/resources/disk/component.hpp"
 
@@ -26,12 +25,10 @@ using LifecycleNodeShPtr = std::shared_ptr<rclcpp_lifecycle::LifecycleNode>;
 using LifecycleNodeConstructorCallback = std::function<LifecycleNodeShPtr()>;
 
 using NoopNode = ros_sec_test::attacks::noop::Component;
-using TeleopNode = ros_sec_test::attacks::coms::teleop::Component;
 using DiskNode = ros_sec_test::attacks::resources::disk::Component;
 
 static const std::map<std::string, LifecycleNodeConstructorCallback>
 kNodeNameToFactoryCallback = {
-  {"coms/teleop", []() -> LifecycleNodeShPtr {return std::make_shared<TeleopNode>();}},
   {"noop", []() -> LifecycleNodeShPtr {return std::make_shared<NoopNode>();}},
   {"resources/disk", []() -> LifecycleNodeShPtr {return std::make_shared<DiskNode>();}},
 };

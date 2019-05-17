@@ -57,9 +57,6 @@ custom_component(
     noop_component src/attacks/noop/component.cpp
     ros_sec_test::attacks::noop::Component)
 custom_component(
-    teleop_component src/attacks/coms/teleop/component.cpp
-    ros_sec_test::attacks::coms::teleop::Component)
-custom_component(
     disk_component src/attacks/resources/disk/component.cpp
     ros_sec_test::attacks::resources::disk::Component)
 
@@ -79,7 +76,6 @@ target_link_libraries(
     attacks
     noop_component
     disk_component
-    teleop_component
 )
 
 add_library(
@@ -105,7 +101,6 @@ install(TARGETS
   attacks
   utilities
   noop_component
-  teleop_component
   disk_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

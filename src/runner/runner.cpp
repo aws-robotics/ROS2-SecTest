@@ -137,7 +137,7 @@ void Runner::warn_user_no_attack_nodes_passed()
     "    attack_nodes:\n"
     "      - 'noop'\n"
     "\n"
-    "The available attacks are 'coms/teleop', 'noop' and 'resources/disk'.\n"
+    "The available attacks are 'noop' and 'resources/disk'.\n"
   );
 }
 
