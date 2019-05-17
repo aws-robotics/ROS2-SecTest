@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <thread>
@@ -50,5 +51,5 @@ int main(int argc, char * argv[])
       [&runner]() {runner.spin();});
   exec.spin_until_future_complete(script);
   rclcpp::shutdown();
-  return 0;
+  return EXIT_SUCCESS;
 }
