@@ -47,9 +47,8 @@ int main(int argc, char * argv[])
   }
   Runner runner(initialized_nodes);
   rclcpp::executors::SingleThreadedExecutor & exec = runner.get_internal_executor();
-  std::shared_future<void> script = std::async(std::launch::async,
-      [&runner]() {runner.spin();});
-  exec.spin_until_future_complete(script);
+  std::shared_future<void> attack_result_future = runner.execute_all_attacks_async();
+  exec.spin_until_future_complete(attack_result_future);
   rclcpp::shutdown();
   return EXIT_SUCCESS;
 }

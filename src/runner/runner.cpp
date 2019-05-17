@@ -13,6 +13,7 @@
 // limitations under the License.
 #include "runner/runner.hpp"
 
+#include <future>
 #include <memory>
 #include <string>
 #include <vector>
@@ -46,7 +47,13 @@ Runner::Runner(const std::vector<std::string> & node_names)
   }
 }
 
-void Runner::spin()
+std::future<void> Runner::execute_all_attacks_async()
+{
+  return std::async(std::launch::async,
+           [this]() {start_and_stop_all_nodes();});
+}
+
+void Runner::start_and_stop_all_nodes()
 {
   for (auto & client : lifecycle_clients_) {
     if (!client->configure() ||

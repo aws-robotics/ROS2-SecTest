@@ -13,6 +13,7 @@
 // limitations under the License.
 #ifndef RUNNER__RUNNER_HPP_
 #define RUNNER__RUNNER_HPP_
+#include <future>
 #include <memory>
 #include <string>
 #include <vector>
@@ -37,7 +38,7 @@ public:
   Runner(const Runner &) = delete;
   Runner & operator=(const Runner &) = delete;
 
-  void spin();
+  std::future<void> execute_all_attacks_async();
 
   // FIXME: temporary. To be removed once the main does not contain executor logic.
   rclcpp::executors::SingleThreadedExecutor &
@@ -46,13 +47,9 @@ public:
     return executor_;
   }
 
-  // FIXME: temporary. To be removed once the executor is placed inside this class.
-  rclcpp::Node::SharedPtr get_internal_node() const
-  {
-    return node_;
-  }
-
 private:
+  void start_and_stop_all_nodes();
+
   /// Create a separate node to send lifecycle requests.
   rclcpp::Node::SharedPtr node_;
   std::vector<std::string> nodes_;
