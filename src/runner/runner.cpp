@@ -33,13 +33,15 @@ namespace runner
 Runner::Runner(const std::vector<std::string> & node_names)
 : node_(std::make_shared<rclcpp::Node>("attacker_node", "",
     rclcpp::NodeOptions().use_intra_process_comms(true))),
-  nodes_(node_names),
+  attack_nodes_(),
+  lifecycle_clients_(),
   executor_()
 {
   executor_.add_node(node_);
   for (const auto & node_name : node_names) {
     auto attack_node = build_attack_node_from_name(node_name);
     if (attack_node) {
+      attack_nodes_.emplace_back(attack_node);
       executor_.add_node(attack_node->get_node_base_interface());
       lifecycle_clients_.push_back(
         std::make_shared<LifecycleServiceClient>(node_.get(), node_name));

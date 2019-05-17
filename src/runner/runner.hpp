@@ -46,7 +46,6 @@ private:
 
   /// Create a separate node to send lifecycle requests.
   rclcpp::Node::SharedPtr node_;
-  std::vector<std::string> nodes_;
   std::vector<rclcpp_lifecycle::LifecycleNode::SharedPtr> attack_nodes_;
   std::vector<std::shared_ptr<utilities::LifecycleServiceClient>> lifecycle_clients_;
   rclcpp::executors::SingleThreadedExecutor executor_;
