@@ -10,7 +10,6 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>class_loader</build_depend>
-  <build_depend>geometry_msgs</build_depend>
   <build_depend>lifecycle_msgs</build_depend>
   <build_depend>rclcpp</build_depend>
   <build_depend>rclcpp_components</build_depend>
@@ -18,13 +17,13 @@
   <build_depend>rcutils</build_depend>
 
   <exec_depend>class_loader</exec_depend>
-  <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>lifecycle_msgs</exec_depend>
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>rclcpp_lifecycle</exec_depend>
   <exec_depend>rcutils</exec_depend>
   <exec_depend>ros2run</exec_depend>
 
+  <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
