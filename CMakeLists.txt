@@ -73,6 +73,9 @@ custom_component(
 custom_component(
     disk_component src/attacks/resources/disk/component.cpp
     ros_sec_test::attacks::resources::disk::Component)
+custom_component(
+    memory_component src/attacks/resources/memory/component.cpp
+    ros_sec_test::attacks::resources::memory::Component)
 
 # Define the attack library containing all attack nodes and the factory.
 add_library(
@@ -85,6 +88,7 @@ target_link_libraries(
     noop_component
     cpu_component
     disk_component
+    memory_component
 )
 ament_target_dependencies(ros_sec_test_attacks "class_loader" "rclcpp" "rclcpp_lifecycle")
 
@@ -94,6 +98,7 @@ install(TARGETS
   noop_component
   cpu_component
   disk_component
+  memory_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
@@ -127,6 +132,9 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_attack_resources_cpu test/attacks/resources/cpu/test_component.cpp)
   target_link_libraries(test_attack_resources_cpu cpu_component ros_sec_test_attacks ros_sec_test_utilities)
+
+  ament_add_gtest(test_attack_resources_memory test/attacks/resources/memory/test_component.cpp)
+  target_link_libraries(test_attack_resources_memory memory_component ros_sec_test_attacks ros_sec_test_utilities)
 endif()
 
 # since the package installs libraries without exporting them
