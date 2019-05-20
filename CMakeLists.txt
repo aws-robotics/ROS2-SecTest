@@ -34,7 +34,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_CXX_FLAGS}")
 include_directories(
     include
     src   # For private headers
-    ${geometry_msgs_INCLUDE_DIRS}
     ${lifecycle_msgs_INCLUDE_DIRS}
     ${rclcpp_INCLUDE_DIRS}
     ${rclcpp_lifecycle_INCLUDE_DIRS}
@@ -67,6 +66,9 @@ custom_component(
     noop_component src/attacks/noop/component.cpp
     ros_sec_test::attacks::noop::Component)
 custom_component(
+    cpu_component src/attacks/resources/cpu/component.cpp
+    ros_sec_test::attacks::resources::cpu::Component)
+custom_component(
     disk_component src/attacks/resources/disk/component.cpp
     ros_sec_test::attacks::resources::disk::Component)
 
@@ -79,6 +81,7 @@ add_library(
 target_link_libraries(
     ros_sec_test_attacks
     noop_component
+    cpu_component
     disk_component
 )
 ament_target_dependencies(ros_sec_test_attacks "class_loader" "rclcpp" "rclcpp_lifecycle")
@@ -87,6 +90,7 @@ install(TARGETS
   ros_sec_test_attacks
   ros_sec_test_utilities
   noop_component
+  cpu_component
   disk_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
