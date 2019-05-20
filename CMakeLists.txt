@@ -114,9 +114,9 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_service_utils test/utilities/test_service_utils.cpp)
   target_link_libraries(test_service_utils ros_sec_test_utilities)
-  ament_add_test(test_logging_macros_c
-    COMMAND "$<TARGET_FILE:test_service_utils>"
-    GENERATE_RESULT_FOR_RETURN_CODE_ZERO)
+
+  ament_add_gtest(test_client_utils test/utilities/test_client_utils.cpp)
+  target_link_libraries(test_client_utils ros_sec_test_utilities)
 endif()
 
 # since the package installs libraries without exporting them
