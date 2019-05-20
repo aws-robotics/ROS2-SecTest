@@ -40,16 +40,26 @@ include_directories(
     ${rclcpp_lifecycle_INCLUDE_DIRS}
 )
 
+# This package contains multiple targets:
+#
+# ros_sec_utility <- ros_sec_attacks <- runner
+# (all attacks)   <-/
 
+# Define utility library containing all the shared code.
+add_library(
+    ros_sec_test_utilities
+    SHARED
+    src/utilities/lifecycle_service_client.cpp
+    src/utilities/service_utils.cpp
+)
+ament_target_dependencies(ros_sec_test_utilities "rclcpp" "rclcpp_lifecycle")
+
+# Define all attacks.
 function(custom_component target file_path component)
     add_library(${target} SHARED ${file_path})
     target_compile_definitions(${target}
         PRIVATE "COMPOSITION_BUILDING_DLL")
-    ament_target_dependencies(${target}
-        "class_loader"
-        "${rclcpp_LIBRARIES}"
-        "${rclcpp_lifecycle_LIBRARIES}"
-        "geometry_msgs")
+    ament_target_dependencies(${target} "class_loader")
     rclcpp_components_register_nodes(${target} ${component})
 endfunction()
 
@@ -60,31 +70,29 @@ custom_component(
     disk_component src/attacks/resources/disk/component.cpp
     ros_sec_test::attacks::resources::disk::Component)
 
-# since the package installs libraries without exporting them
-# it needs to make sure that the library path is being exported
-if(NOT WIN32)
-  ament_environment_hooks(
-    "${ament_cmake_package_templates_ENVIRONMENT_HOOK_LIBRARY_PATH}")
-endif()
-
+# Define the attack library containing all attack nodes and the factory.
 add_library(
-    attacks
+    ros_sec_test_attacks
     SHARED
     src/attacks/factory_utils.cpp
 )
 target_link_libraries(
-    attacks
+    ros_sec_test_attacks
     noop_component
     disk_component
 )
+ament_target_dependencies(ros_sec_test_attacks "class_loader" "rclcpp" "rclcpp_lifecycle")
 
-add_library(
-    utilities
-    SHARED
-    src/utilities/lifecycle_service_client.cpp
-    src/utilities/service_utils.cpp
-)
+install(TARGETS
+  ros_sec_test_attacks
+  ros_sec_test_utilities
+  noop_component
+  disk_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
 
+# Define the runner node.
 add_executable(
     runner
     src/runner/main.cpp
@@ -92,28 +100,31 @@ add_executable(
 )
 target_link_libraries(
     runner
-    attacks
-    utilities
+    ros_sec_test_attacks
+    ros_sec_test_utilities
 )
 ament_target_dependencies(runner "rclcpp" "rclcpp_lifecycle")
+install(TARGETS runner DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS
-  attacks
-  utilities
-  noop_component
-  disk_component
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
-
-install(TARGETS
-    runner
-    DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
+
+  ament_add_gtest(test_service_utils test/utilities/test_service_utils.cpp)
+  target_link_libraries(test_service_utils ros_sec_test_utilities)
+  ament_add_test(test_logging_macros_c
+    COMMAND "$<TARGET_FILE:test_service_utils>"
+    GENERATE_RESULT_FOR_RETURN_CODE_ZERO)
 endif()
+
+# since the package installs libraries without exporting them
+# it needs to make sure that the library path is being exported
+if(NOT WIN32)
+  ament_environment_hooks(
+    "${ament_cmake_package_templates_ENVIRONMENT_HOOK_LIBRARY_PATH}")
+endif()
+
 
 ament_package()
