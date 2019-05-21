@@ -15,6 +15,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(rcutils REQUIRED)
+find_package(rcpputils REQUIRED)
 
 # Enable strict compiler flags if possible.
 include(CheckCXXCompilerFlag)
@@ -37,6 +38,7 @@ include_directories(
     ${lifecycle_msgs_INCLUDE_DIRS}
     ${rclcpp_INCLUDE_DIRS}
     ${rclcpp_lifecycle_INCLUDE_DIRS}
+    ${rcpputils_INCLUDE_DIRS}
 )
 
 # This package contains multiple targets:

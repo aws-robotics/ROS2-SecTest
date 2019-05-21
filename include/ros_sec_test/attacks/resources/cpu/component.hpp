@@ -21,6 +21,7 @@
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
+#include "rcpputils/thread_safety_annotations.hpp"
 
 namespace ros_sec_test
 {
@@ -43,7 +44,9 @@ namespace cpu
 class Component : public rclcpp_lifecycle::LifecycleNode
 {
 public:
-  Component();
+  Component()
+  : Component(32) {}
+  explicit Component(std::size_t max_num_threads);
   Component(const Component &) = delete;
   Component & operator=(const Component &) = delete;
 
@@ -67,19 +70,22 @@ private:
   void run_periodic_attack();
 
   /// Run an infinite loop of arbitrary work
-  void consume_cpu_resources() const;
+  static void consume_cpu_resources();
 
   /// Join threads, clear vector, reset timer
-  void clear_resources();
+  void terminate_attack_and_cleanup_resources();
 
-  /// Timer controlling how often we spawn another thread.
-  rclcpp::TimerBase::SharedPtr timer_;
+  /// Maximum number of threads to spawn
+  std::size_t max_num_threads_;
 
   /// Manages thread safety for threads_
-  std::mutex mu_;
+  mutable std::mutex mutex_;
 
   /// List of threads in use
-  std::vector<std::thread> threads_;
+  std::vector<std::thread> threads_ RCPPUTILS_TSA_GUARDED_BY(mutex_);
+
+  /// Timer controlling how often we spawn another thread.
+  rclcpp::TimerBase::SharedPtr timer_ RCPPUTILS_TSA_GUARDED_BY(mutex_);
 };
 
 }  // namespace cpu

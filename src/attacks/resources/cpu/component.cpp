@@ -21,6 +21,8 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <utility>
+#include <vector>
 
 #include "lifecycle_msgs/msg/transition.hpp"
 #include "rclcpp/publisher.hpp"
@@ -28,6 +30,7 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "rcutils/logging_macros.h"
+#include "rcpputils/thread_safety_annotations.hpp"
 
 using namespace std::chrono_literals;
 
@@ -42,17 +45,25 @@ namespace resources
 namespace cpu
 {
 
-Component::Component()
+Component::Component(std::size_t max_num_threads)
 : rclcpp_lifecycle::LifecycleNode(
     "resources_cpu", "", rclcpp::NodeOptions().use_intra_process_comms(
-      true)), mu_(), threads_() {}
+      true)),
+  max_num_threads_(max_num_threads),
+  mutex_(),
+  threads_(),
+  timer_() {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_configure(const rclcpp_lifecycle::State & /* state */)
+RCPPUTILS_TSA_REQUIRES(!mutex_)
 {
   RCLCPP_INFO(get_logger(), "on_configure() is called.");
-  timer_ = this->create_wall_timer(
-    1s, [this] {run_periodic_attack();});
+  auto callback = [this] {run_periodic_attack();};
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    timer_ = this->create_wall_timer(1s, std::move(callback));
+  }
   return CallbackReturn::SUCCESS;
 }
 
@@ -74,7 +85,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
-  clear_resources();
+  terminate_attack_and_cleanup_resources();
   return CallbackReturn::SUCCESS;
 }
 
@@ -82,31 +93,40 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
-  clear_resources();
+  terminate_attack_and_cleanup_resources();
   return CallbackReturn::SUCCESS;
 }
 
-void Component::clear_resources()
+void Component::terminate_attack_and_cleanup_resources() RCPPUTILS_TSA_REQUIRES(!mutex_)
 {
-  mu_.lock();
-  timer_.reset();
-  // Join threads in case cleanup wasn't called before
-  for (auto & thread : threads_) {
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    timer_.reset();
+  }
+  std::vector<std::thread> threads;
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    threads = std::move(threads_);
+  }
+  for (auto & thread : threads) {
     thread.join();
   }
-  threads_.clear();
-  mu_.unlock();
+  threads.clear();
 }
 
-void Component::run_periodic_attack()
+void Component::run_periodic_attack() RCPPUTILS_TSA_REQUIRES(!mutex_)
 {
-  mu_.lock();
-  threads_.emplace_back(std::thread([this] {consume_cpu_resources();}));
-  mu_.unlock();
+  auto thread = std::thread([this] {consume_cpu_resources();});
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (max_num_threads_ > threads_.size()) {
+      threads_.push_back(std::move(thread));
+    }
+  }
 }
 
 
-void Component::consume_cpu_resources() const
+void Component::consume_cpu_resources()
 {
   int i_sum = 0;
   for (int i = 0;; i++) {
