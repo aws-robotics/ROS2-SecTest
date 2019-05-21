@@ -44,8 +44,7 @@ namespace cpu
 class Component : public rclcpp_lifecycle::LifecycleNode
 {
 public:
-  Component()
-  : Component(32) {}
+  Component();
   explicit Component(std::size_t max_num_threads);
   Component(const Component &) = delete;
   Component & operator=(const Component &) = delete;

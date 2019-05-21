@@ -44,6 +44,9 @@ namespace resources
 {
 namespace cpu
 {
+/// Start with an arbitrary, large number of threads to overwhelm CPU
+Component::Component()
+: Component(1024) {}
 
 Component::Component(std::size_t max_num_threads)
 : rclcpp_lifecycle::LifecycleNode(
