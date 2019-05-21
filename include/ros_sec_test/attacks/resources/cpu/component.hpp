@@ -13,8 +13,9 @@
 // limitations under the License.
 #ifndef ROS_SEC_TEST__ATTACKS__RESOURCES__CPU__COMPONENT_HPP_
 #define ROS_SEC_TEST__ATTACKS__RESOURCES__CPU__COMPONENT_HPP_
-#include <vector>
+#include <mutex>
 #include <thread>
+#include <vector>
 
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
@@ -66,10 +67,16 @@ private:
   void run_periodic_attack();
 
   /// Run an infinite loop of arbitrary work
-  void infinite_sum_loop() const;
+  void consume_cpu_resources() const;
+
+  /// Join threads, clear vector, reset timer
+  void clear_resources();
 
   /// Timer controlling how often we spawn another thread.
   rclcpp::TimerBase::SharedPtr timer_;
+
+  /// Manages thread safety for threads_
+  std::mutex mu_;
 
   /// List of threads in use
   std::vector<std::thread> threads_;

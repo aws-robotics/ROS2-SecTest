@@ -18,6 +18,7 @@
 
 #include <chrono>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -44,7 +45,7 @@ namespace cpu
 Component::Component()
 : rclcpp_lifecycle::LifecycleNode(
     "resources_cpu", "", rclcpp::NodeOptions().use_intra_process_comms(
-      true)), threads_() {}
+      true)), mu_(), threads_() {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_configure(const rclcpp_lifecycle::State & /* state */)
@@ -73,33 +74,42 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
-  for (auto & thread : threads_) {
-    thread.join();
-  }
+  clear_resources();
   return CallbackReturn::SUCCESS;
 }
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
 {
-  timer_.reset();
   RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
+  clear_resources();
+  return CallbackReturn::SUCCESS;
+}
+
+void Component::clear_resources()
+{
+  mu_.lock();
+  timer_.reset();
   // Join threads in case cleanup wasn't called before
   for (auto & thread : threads_) {
     thread.join();
   }
-  return CallbackReturn::SUCCESS;
+  threads_.clear();
+  mu_.unlock();
 }
 
 void Component::run_periodic_attack()
 {
-  threads_.emplace_back(std::thread([this] {infinite_sum_loop();}));
+  mu_.lock();
+  threads_.emplace_back(std::thread([this] {consume_cpu_resources();}));
+  mu_.unlock();
 }
 
-void Component::infinite_sum_loop() const
+
+void Component::consume_cpu_resources() const
 {
-  int i, i_sum = 0;
-  for (i = 0;; i++) {
+  int i_sum = 0;
+  for (int i = 0;; i++) {
     if (!rclcpp::ok()) {
       return;
     }

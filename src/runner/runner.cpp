@@ -112,7 +112,6 @@ void Runner::start_and_stop_all_nodes()
       return;
     }
   }
-  rclcpp::sleep_for(std::chrono::seconds(15));
   for (const auto & node_data : attack_nodes_) {
     RCLCPP_INFO(logger_, "Shutting-down attack node '%s'", node_data.node->get_name());
     auto & client = node_data.lifecycle_client;
