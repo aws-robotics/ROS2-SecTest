@@ -45,7 +45,7 @@ namespace disk
 
 Component::Component()
 : rclcpp_lifecycle::LifecycleNode(
-    "disk_attacker", "", rclcpp::NodeOptions().use_intra_process_comms(
+    "resources_disk", "", rclcpp::NodeOptions().use_intra_process_comms(
       true)) {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn

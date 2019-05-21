@@ -75,7 +75,7 @@ private:
   std::vector<std::thread> threads_;
 };
 
-}  // namespace cpu 
+}  // namespace cpu
 }  // namespace resources
 }  // namespace attacks
 }  // namespace ros_sec_test

@@ -38,13 +38,13 @@ namespace attacks
 {
 namespace resources
 {
-namespace cpu 
+namespace cpu
 {
 
 Component::Component()
 : rclcpp_lifecycle::LifecycleNode(
-    "cpu_attacker", "", rclcpp::NodeOptions().use_intra_process_comms(
-      true)), threads_(){}
+    "resources_cpu", "", rclcpp::NodeOptions().use_intra_process_comms(
+      true)), threads_() {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_configure(const rclcpp_lifecycle::State & /* state */)
@@ -73,8 +73,8 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
-  for (auto &thread: threads_) {
-      thread.join();
+  for (auto & thread : threads_) {
+    thread.join();
   }
   return CallbackReturn::SUCCESS;
 }
@@ -84,33 +84,33 @@ Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
 {
   timer_.reset();
   RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
-  //Join threads in case cleanup wasn't called before
-  for (auto &thread: threads_) {
-      thread.join();
+  // Join threads in case cleanup wasn't called before
+  for (auto & thread : threads_) {
+    thread.join();
   }
   return CallbackReturn::SUCCESS;
 }
 
-void Component::run_periodic_attack_()
+void Component::run_periodic_attack()
 {
-  threads_.emplace_back(std::thread([this]{infinite_sum_loop();}));  
+  threads_.emplace_back(std::thread([this] {infinite_sum_loop();}));
 }
 
 void Component::infinite_sum_loop() const
 {
   int i, i_sum = 0;
-  for (i=0; ; i++) {
+  for (i = 0;; i++) {
     if (!rclcpp::ok()) {
       return;
     }
-    //It's fine if this overflows
+    // It's fine if this overflows
     i_sum += i;
-    //Prevent optimization
-    asm("nop");
+    // Prevent optimization
+    asm ("nop");
   }
 }
 
-}  // namespace cpu 
+}  // namespace cpu
 }  // namespace resources
 }  // namespace attacks
 }  // namespace ros_sec_test
