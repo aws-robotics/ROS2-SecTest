@@ -69,7 +69,7 @@ private:
   void run_periodic_attack();
 
   /// Run an infinite loop of arbitrary work
-  static void consume_cpu_resources();
+  void consume_cpu_resources();
 
   /// Join threads, clear vector, reset timer
   void terminate_attack_and_cleanup_resources();

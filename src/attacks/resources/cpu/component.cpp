@@ -24,6 +24,7 @@
 #include <utility>
 #include <vector>
 
+#include "lifecycle_msgs/msg/state.hpp"
 #include "lifecycle_msgs/msg/transition.hpp"
 #include "rclcpp/publisher.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -133,7 +134,9 @@ void Component::consume_cpu_resources()
 {
   int i_sum = 0;
   for (int i = 0;; i++) {
-    if (!rclcpp::ok()) {
+    if (!rclcpp::ok() ||
+      lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE != get_current_state().id())
+    {
       return;
     }
     // It's fine if this overflows
