@@ -15,6 +15,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(rcutils REQUIRED)
+find_package(rcpputils REQUIRED)
 
 # Enable strict compiler flags if possible.
 include(CheckCXXCompilerFlag)
@@ -34,10 +35,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_CXX_FLAGS}")
 include_directories(
     include
     src   # For private headers
-    ${geometry_msgs_INCLUDE_DIRS}
     ${lifecycle_msgs_INCLUDE_DIRS}
     ${rclcpp_INCLUDE_DIRS}
     ${rclcpp_lifecycle_INCLUDE_DIRS}
+    ${rcpputils_INCLUDE_DIRS}
 )
 
 # This package contains multiple targets:
@@ -67,6 +68,9 @@ custom_component(
     noop_component src/attacks/noop/component.cpp
     ros_sec_test::attacks::noop::Component)
 custom_component(
+    cpu_component src/attacks/resources/cpu/component.cpp
+    ros_sec_test::attacks::resources::cpu::Component)
+custom_component(
     disk_component src/attacks/resources/disk/component.cpp
     ros_sec_test::attacks::resources::disk::Component)
 
@@ -79,6 +83,7 @@ add_library(
 target_link_libraries(
     ros_sec_test_attacks
     noop_component
+    cpu_component
     disk_component
 )
 ament_target_dependencies(ros_sec_test_attacks "class_loader" "rclcpp" "rclcpp_lifecycle")
@@ -87,6 +92,7 @@ install(TARGETS
   ros_sec_test_attacks
   ros_sec_test_utilities
   noop_component
+  cpu_component
   disk_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -117,6 +123,9 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_client_utils test/utilities/test_client_utils.cpp)
   target_link_libraries(test_client_utils ros_sec_test_utilities)
+
+  ament_add_gtest(test_attack_resources_cpu test/attacks/resources/cpu/test_component.cpp)
+  target_link_libraries(test_attack_resources_cpu cpu_component ros_sec_test_attacks ros_sec_test_utilities)
 endif()
 
 # since the package installs libraries without exporting them
