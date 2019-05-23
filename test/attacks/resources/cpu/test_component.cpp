@@ -28,15 +28,29 @@ using CPUNode = ros_sec_test::attacks::resources::cpu::Component;
 using lifecycle_msgs::msg::State;
 using lifecycle_msgs::msg::Transition;
 
-class NodeConfigurationFixture
+class ROSTestingFixture : public ::testing::Test
+{
+public:
+  ROSTestingFixture()
+  {
+    rclcpp::init(0, nullptr);
+  }
+
+  ~ROSTestingFixture()
+  {
+    rclcpp::shutdown();
+  }
+};
+
+
+class NodeConfigurationFixture : public ROSTestingFixture
 {
 protected:
   rclcpp::executors::SingleThreadedExecutor executor_;
+  rclcpp::Node::SharedPtr node_;
 
 public:
-  rclcpp::Node::SharedPtr node_;
-  NodeConfigurationFixture()
-  : executor_()
+  void SetUp() override
   {
     node_ = rclcpp::Node::make_shared("test_node");
     executor_.add_node(node_);
@@ -59,18 +73,16 @@ public:
   }
 };
 
-TEST(attack_resource_cpu, check_full_node_lifecycle) {
+TEST_F(NodeConfigurationFixture, check_full_node_lifecycle) {
   using namespace std::chrono_literals;
-  rclcpp::init(0, nullptr);
   const std::string node_name = "resources_cpu";
-  NodeConfigurationFixture ncf;
   {
-    auto attack_node = std::make_shared<CPUNode>(1);
-    ncf.add_node_to_executor(attack_node->get_node_base_interface());
+    auto attack_node = std::make_shared<CPUNode>(0);
+    add_node_to_executor(attack_node->get_node_base_interface());
 
     std::promise<void> thread_promise;
     std::shared_future<void> future = thread_promise.get_future();
-    ncf.spin_executor_until(future);
+    spin_executor_until(future);
 
     attack_node->trigger_transition(rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE));
     ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
@@ -86,7 +98,6 @@ TEST(attack_resource_cpu, check_full_node_lifecycle) {
 
     thread_promise.set_value();
   }
-  rclcpp::shutdown();
 }
 
 int main(int argc, char ** argv)
