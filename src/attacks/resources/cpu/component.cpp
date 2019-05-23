@@ -45,9 +45,11 @@ namespace resources
 {
 namespace cpu
 {
-// Start with an arbitrary, large number of threads to overwhelm CPU
+// By default start with twice the maximum supported number of threads. Hardware concurrency
+// isn't guaranteed to be accurate so the maximum number of threads is doubled to avoid
+// the attack failing.
 Component::Component()
-: Component(1024) {}
+: Component(2 * std::thread::hardware_concurrency()) {}
 
 Component::Component(std::size_t max_num_threads)
 : rclcpp_lifecycle::LifecycleNode(
