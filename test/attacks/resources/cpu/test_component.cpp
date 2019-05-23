@@ -48,12 +48,15 @@ class NodeConfigurationFixture : public ROSTestingFixture
 protected:
   rclcpp::executors::SingleThreadedExecutor executor_;
   rclcpp::Node::SharedPtr node_;
+  std::promise<void> thread_promise_;
+  std::shared_future<void> future_;
 
 public:
   void SetUp() override
   {
     node_ = rclcpp::Node::make_shared("test_node");
     executor_.add_node(node_);
+    future_ = thread_promise_.get_future();
   }
 
   void add_node_to_executor(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node)
@@ -71,33 +74,107 @@ public:
       });
     thread_spin.join();
   }
+  void start_executor()
+  {
+    spin_executor_until(future_);
+  }
+  void stop_executor()
+  {
+    thread_promise_.set_value();
+  }
+  void TearDown() override
+  {
+    stop_executor();
+  }
 };
 
+TEST_F(NodeConfigurationFixture, check_configuring_transition) {
+  auto attack_node = std::make_shared<CPUNode>(0);
+  add_node_to_executor(attack_node->get_node_base_interface());
+  start_executor();
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE)).id());
+}
+
+TEST_F(NodeConfigurationFixture, check_activating_transition) {
+  auto attack_node = std::make_shared<CPUNode>(0);
+  add_node_to_executor(attack_node->get_node_base_interface());
+  start_executor();
+  attack_node->trigger_transition(
+    rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE));
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->get_current_state().id());
+  ASSERT_EQ(State::PRIMARY_STATE_ACTIVE, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_ACTIVATE)).id());
+}
+
+TEST_F(NodeConfigurationFixture, check_deactivating_transition) {
+  auto attack_node = std::make_shared<CPUNode>(0);
+  add_node_to_executor(attack_node->get_node_base_interface());
+  start_executor();
+  attack_node->trigger_transition(
+    rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE));
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->get_current_state().id());
+  attack_node->trigger_transition(
+    rclcpp_lifecycle::Transition(Transition::TRANSITION_ACTIVATE));
+  ASSERT_EQ(State::PRIMARY_STATE_ACTIVE, attack_node->get_current_state().id());
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_DEACTIVATE)).id());
+}
+
+TEST_F(NodeConfigurationFixture, check_cleaningup_transition) {
+  auto attack_node = std::make_shared<CPUNode>(0);
+  add_node_to_executor(attack_node->get_node_base_interface());
+  start_executor();
+  attack_node->trigger_transition(
+    rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE));
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->get_current_state().id());
+  ASSERT_EQ(State::PRIMARY_STATE_UNCONFIGURED, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_CLEANUP)).id());
+}
+
+TEST_F(NodeConfigurationFixture, check_unconfigured_shuttingdown_transition) {
+  auto attack_node = std::make_shared<CPUNode>(0);
+  add_node_to_executor(attack_node->get_node_base_interface());
+  start_executor();
+  attack_node->trigger_transition(
+    rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE));
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->get_current_state().id());
+  attack_node->trigger_transition(
+    rclcpp_lifecycle::Transition(Transition::TRANSITION_CLEANUP));
+  ASSERT_EQ(State::PRIMARY_STATE_UNCONFIGURED, attack_node->get_current_state().id());
+  ASSERT_EQ(State::PRIMARY_STATE_FINALIZED, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_UNCONFIGURED_SHUTDOWN)).id());
+}
+
+TEST_F(NodeConfigurationFixture, check_active_shuttingdown_transition) {
+  auto attack_node = std::make_shared<CPUNode>(0);
+  add_node_to_executor(attack_node->get_node_base_interface());
+  start_executor();
+  attack_node->trigger_transition(
+    rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE));
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->get_current_state().id());
+  attack_node->trigger_transition(
+    rclcpp_lifecycle::Transition(Transition::TRANSITION_ACTIVATE));
+  ASSERT_EQ(State::PRIMARY_STATE_ACTIVE, attack_node->get_current_state().id());
+  ASSERT_EQ(State::PRIMARY_STATE_FINALIZED, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_ACTIVE_SHUTDOWN)).id());
+}
+
 TEST_F(NodeConfigurationFixture, check_full_node_lifecycle) {
-  using namespace std::chrono_literals;
-  const std::string node_name = "resources_cpu";
-  {
-    auto attack_node = std::make_shared<CPUNode>(0);
-    add_node_to_executor(attack_node->get_node_base_interface());
+  auto attack_node = std::make_shared<CPUNode>(0);
+  add_node_to_executor(attack_node->get_node_base_interface());
+  start_executor();
 
-    std::promise<void> thread_promise;
-    std::shared_future<void> future = thread_promise.get_future();
-    spin_executor_until(future);
-
-    attack_node->trigger_transition(rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE));
-    ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
-        rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE)).id());
-    ASSERT_EQ(State::PRIMARY_STATE_ACTIVE, attack_node->trigger_transition(
-        rclcpp_lifecycle::Transition(Transition::TRANSITION_ACTIVATE)).id());
-    ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
-        rclcpp_lifecycle::Transition(Transition::TRANSITION_DEACTIVATE)).id());
-    ASSERT_EQ(State::PRIMARY_STATE_UNCONFIGURED, attack_node->trigger_transition(
-        rclcpp_lifecycle::Transition(Transition::TRANSITION_CLEANUP)).id());
-    ASSERT_EQ(State::PRIMARY_STATE_FINALIZED, attack_node->trigger_transition(
-        rclcpp_lifecycle::Transition(Transition::TRANSITION_UNCONFIGURED_SHUTDOWN)).id());
-
-    thread_promise.set_value();
-  }
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE)).id());
+  ASSERT_EQ(State::PRIMARY_STATE_ACTIVE, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_ACTIVATE)).id());
+  ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_DEACTIVATE)).id());
+  ASSERT_EQ(State::PRIMARY_STATE_UNCONFIGURED, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_CLEANUP)).id());
+  ASSERT_EQ(State::PRIMARY_STATE_FINALIZED, attack_node->trigger_transition(
+      rclcpp_lifecycle::Transition(Transition::TRANSITION_UNCONFIGURED_SHUTDOWN)).id());
 }
 
 int main(int argc, char ** argv)
