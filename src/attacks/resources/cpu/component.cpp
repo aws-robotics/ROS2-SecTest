@@ -45,7 +45,7 @@ namespace resources
 {
 namespace cpu
 {
-/// Start with an arbitrary, large number of threads to overwhelm CPU
+// Start with an arbitrary, large number of threads to overwhelm CPU
 Component::Component()
 : Component(1024) {}
 
@@ -134,9 +134,7 @@ void Component::consume_cpu_resources()
 {
   int i_sum = 0;
   for (int i = 0;; i++) {
-    if (!rclcpp::ok() ||
-      lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE != get_current_state().id())
-    {
+    if (!rclcpp::ok()) {
       return;
     }
     // It's fine if this overflows

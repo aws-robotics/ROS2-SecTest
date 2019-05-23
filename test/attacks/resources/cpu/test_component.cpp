@@ -17,48 +17,74 @@
 #include <memory>
 #include <string>
 
-
 #include "ros_sec_test/attacks/resources/cpu/component.hpp"
-#include "utilities/lifecycle_service_client.hpp"
-#include "ros_sec_test/attacks/factory_utils.hpp"
 
+#include "lifecycle_msgs/msg/state.hpp"
+#include "lifecycle_msgs/msg/transition.hpp"
 #include "rclcpp/executors/single_threaded_executor.hpp"
 #include "rclcpp/node.hpp"
 
-using LifecycleServiceClient = ros_sec_test::utilities::LifecycleServiceClient;
-using ros_sec_test::attacks::build_attack_node_from_name;
 using CPUNode = ros_sec_test::attacks::resources::cpu::Component;
+using lifecycle_msgs::msg::State;
+using lifecycle_msgs::msg::Transition;
 
-TEST(attacks_resources_cpu_component, state_transition) {
+class NodeConfigurationFixture
+{
+protected:
+  rclcpp::executors::SingleThreadedExecutor executor_;
+
+public:
+  rclcpp::Node::SharedPtr node_;
+  NodeConfigurationFixture()
+  : executor_()
+  {
+    node_ = rclcpp::Node::make_shared("test_node");
+    executor_.add_node(node_);
+  }
+
+  void add_node_to_executor(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node)
+  {
+    executor_.add_node(node);
+  }
+
+  void spin_executor_until(std::shared_future<void> & future)
+  {
+    using namespace std::chrono_literals;
+    std::thread thread_spin([this, &future]() {
+        RCLCPP_INFO(this->node_->get_logger(), "Spin thread started.");
+        this->executor_.spin_until_future_complete(future, 1000ms);
+        RCLCPP_INFO(this->node_->get_logger(), "Spin thread ended.");
+      });
+    thread_spin.join();
+  }
+};
+
+TEST(attack_resource_cpu, check_full_node_lifecycle) {
   using namespace std::chrono_literals;
   rclcpp::init(0, nullptr);
   const std::string node_name = "resources_cpu";
+  NodeConfigurationFixture ncf;
   {
-    rclcpp::executors::SingleThreadedExecutor executor;
-    auto node = rclcpp::Node::make_shared("test_node");
     auto attack_node = std::make_shared<CPUNode>(1);
-    LifecycleServiceClient lifecycle_client(node.get(), node_name);
-    executor.add_node(node);
-    executor.add_node(attack_node->get_node_base_interface());
+    ncf.add_node_to_executor(attack_node->get_node_base_interface());
+
     std::promise<void> thread_promise;
     std::shared_future<void> future = thread_promise.get_future();
-    RCLCPP_INFO(node->get_logger(), "Starting thread");
+    ncf.spin_executor_until(future);
 
-    std::thread thread_spin([&executor, &future, &node]() {
-        RCLCPP_INFO(node->get_logger(), "Spin thread started.");
-        executor.spin_until_future_complete(future, 1000ms);
-        RCLCPP_INFO(node->get_logger(), "Spin thread ended.");
-      });
+    attack_node->trigger_transition(rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE));
+    ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
+        rclcpp_lifecycle::Transition(Transition::TRANSITION_CONFIGURE)).id());
+    ASSERT_EQ(State::PRIMARY_STATE_ACTIVE, attack_node->trigger_transition(
+        rclcpp_lifecycle::Transition(Transition::TRANSITION_ACTIVATE)).id());
+    ASSERT_EQ(State::PRIMARY_STATE_INACTIVE, attack_node->trigger_transition(
+        rclcpp_lifecycle::Transition(Transition::TRANSITION_DEACTIVATE)).id());
+    ASSERT_EQ(State::PRIMARY_STATE_UNCONFIGURED, attack_node->trigger_transition(
+        rclcpp_lifecycle::Transition(Transition::TRANSITION_CLEANUP)).id());
+    ASSERT_EQ(State::PRIMARY_STATE_FINALIZED, attack_node->trigger_transition(
+        rclcpp_lifecycle::Transition(Transition::TRANSITION_UNCONFIGURED_SHUTDOWN)).id());
 
-    EXPECT_TRUE(lifecycle_client.configure());
-
-    EXPECT_TRUE(lifecycle_client.activate());
-
-    EXPECT_TRUE(lifecycle_client.shutdown());
-
-    RCLCPP_INFO(node->get_logger(), "Thread promise set.");
     thread_promise.set_value();
-    thread_spin.join();
   }
   rclcpp::shutdown();
 }

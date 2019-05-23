@@ -69,18 +69,18 @@ private:
   void run_periodic_attack();
 
   /// Run an infinite loop of arbitrary work
-  void consume_cpu_resources();
+  static void consume_cpu_resources();
 
   /// Join threads, clear vector, reset timer
   void terminate_attack_and_cleanup_resources();
 
   /// Maximum number of threads to spawn
-  std::size_t max_num_threads_;
+  const std::size_t max_num_threads_;
 
   /// Manages thread safety for threads_
   mutable std::mutex mutex_;
 
-  /// List of threads in use
+  /// Threads used to occupy CPU resources
   std::vector<std::thread> threads_ RCPPUTILS_TSA_GUARDED_BY(mutex_);
 
   /// Timer controlling how often we spawn another thread.
