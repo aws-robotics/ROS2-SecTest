@@ -112,6 +112,7 @@ target_link_libraries(
 ament_target_dependencies(runner "rclcpp" "rclcpp_lifecycle")
 install(TARGETS runner DESTINATION lib/${PROJECT_NAME})
 
+install(DIRECTORY examples DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
