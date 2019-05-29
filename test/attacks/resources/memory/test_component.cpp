@@ -30,7 +30,7 @@ using lifecycle_msgs::msg::Transition;
 
 class ROSTestingFixture : public ::testing::Test
 {
-public:
+protected:
   ROSTestingFixture()
   {
     rclcpp::init(0, nullptr);
@@ -51,7 +51,6 @@ protected:
   std::promise<void> thread_promise_;
   std::shared_future<void> future_;
 
-public:
   void SetUp() override
   {
     node_ = rclcpp::Node::make_shared("test_node");
@@ -69,7 +68,7 @@ public:
     using namespace std::chrono_literals;
     std::thread thread_spin([this, &future]() {
         RCLCPP_INFO(this->node_->get_logger(), "Spin thread started.");
-        this->executor_.spin_until_future_complete(future, 1000ms);
+        this->executor_.spin_until_future_complete(future, 100ms);
         RCLCPP_INFO(this->node_->get_logger(), "Spin thread ended.");
       });
     thread_spin.join();

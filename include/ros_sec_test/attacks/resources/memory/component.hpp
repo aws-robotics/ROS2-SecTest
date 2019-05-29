@@ -32,7 +32,7 @@ namespace resources
 namespace memory
 {
 
-/// This attack tries to allocate all available memory.
+/// This attack tries to allocate as much physical memory as possible.
 /**
  * WARNING: this attack will try to fill your RAM.
  *
@@ -47,6 +47,7 @@ class Component : public rclcpp_lifecycle::LifecycleNode
 public:
   Component();
   explicit Component(std::size_t max_memory);
+  ~Component();
   Component(const Component &) = delete;
   Component & operator=(const Component &) = delete;
 
@@ -69,20 +70,23 @@ private:
   /// Allocate 10MiB of memory.
   void run_periodic_attack();
 
-  /// Stop allocaing new memory and free aady allocated memory
+  /// Stop allocaing new memory and free already allocated memory
   void terminate_attack_and_clear_resources();
 
-  /// Maximum amount of memory to allocate
-  const std::size_t max_memory_;
+  /// Amount of memory currently allocated in bytes
+  size_t num_bytes_allocated_;
 
-  // Manages thread safety for vec_
+  /// Maximum amount of memory to allocate in bytes
+  const std::size_t max_num_bytes_allocated_;
+
+  /// Allocated memory block locked to physical memory
+  void * memory_block_;
+
+  // Manages thread safety for memory_block_ and num_bytes_allocated_
   mutable std::mutex mutex_;
 
   /// Timer controlling how often we allocate more memory.
   rclcpp::TimerBase::SharedPtr timer_ RCPPUTILS_TSA_GUARDED_BY(mutex_);
-
-  /// Keep track of allocatedmemory
-  std::vector<std::vector<int>> vec_ RCPPUTILS_TSA_GUARDED_BY(mutex_);
 };
 
 }  // namespace memory

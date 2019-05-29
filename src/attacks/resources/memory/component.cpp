@@ -14,11 +14,15 @@
 #include "ros_sec_test/attacks/resources/memory/component.hpp"
 
 #include <fcntl.h>
+#include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <cerrno>
 #include <chrono>
+#include <iostream>
 #include <limits>
 #include <memory>
 #include <mutex>
@@ -38,8 +42,8 @@ using namespace std::chrono_literals;
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
-// Number of ints to allocate at a time
-constexpr std::size_t VECTOR_SIZE = 100 * 1024 * 1024;
+// Amount of additional memory in bytes to allocate each time the attack loop is allocated.
+static constexpr std::size_t kBytesAllocatedPerAttack = 100 * 1024 * 1024;
 
 namespace ros_sec_test
 {
@@ -53,13 +57,20 @@ namespace memory
 Component::Component()
 : Component(SIZE_MAX) {}
 
-Component::Component(std::size_t max_memory)
+Component::Component(std::size_t max_num_bytes_allocated)
 : rclcpp_lifecycle::LifecycleNode(
     "resources_memory", "", rclcpp::NodeOptions().use_intra_process_comms(
       true)),
-  max_memory_(max_memory),
-  timer_(),
-  vec_() {}
+  num_bytes_allocated_(0),
+  max_num_bytes_allocated_(max_num_bytes_allocated),
+  memory_block_(),
+  timer_() {}
+
+Component::~Component()
+{
+  free(memory_block_);
+}
+
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_configure(const rclcpp_lifecycle::State & /* state */)
@@ -110,19 +121,30 @@ void Component::terminate_attack_and_clear_resources() RCPPUTILS_TSA_REQUIRES(!m
     std::lock_guard<std::mutex> lock(mutex_);
     timer_.reset();
   }
-  std::vector<std::vector<int>> vec;
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    vec = std::move(vec_);
+    munlock(memory_block_, num_bytes_allocated_);
+    free(memory_block_);
   }
-  vec.clear();
 }
 
 void Component::run_periodic_attack() RCPPUTILS_TSA_REQUIRES(!mutex_)
 {
   std::lock_guard<std::mutex> lock(mutex_);
-  if (vec_.size() < max_memory_ / VECTOR_SIZE) {
-    vec_.push_back(std::vector<int>(VECTOR_SIZE));
+  if (num_bytes_allocated_ < max_num_bytes_allocated_) {
+    size_t memory_to_allocate = std::min(num_bytes_allocated_ + kBytesAllocatedPerAttack,
+        max_num_bytes_allocated_);
+    void * new_memory_block = realloc(memory_block_, memory_to_allocate);
+    if (new_memory_block == NULL) {
+      RCLCPP_ERROR(get_logger(), "Failed to allocate memory.");
+    } else {
+      memory_block_ = new_memory_block;
+      num_bytes_allocated_ = memory_to_allocate;
+      int result = mlock(memory_block_, num_bytes_allocated_);
+      if (0 != result) {
+        RCLCPP_ERROR(get_logger(), "Error while trying to lock memory: %s ", std::strerror(errno));
+      }
+    }
   }
 }
 
