@@ -19,21 +19,24 @@
 #include <string>
 
 #include "ros_sec_test/attacks/noop/component.hpp"
-#include "ros_sec_test/attacks/resources/disk/component.hpp"
 #include "ros_sec_test/attacks/resources/cpu/component.hpp"
+#include "ros_sec_test/attacks/resources/disk/component.hpp"
+#include "ros_sec_test/attacks/resources/memory/component.hpp"
 
 using LifecycleNodeShPtr = std::shared_ptr<rclcpp_lifecycle::LifecycleNode>;
 using LifecycleNodeConstructorCallback = std::function<LifecycleNodeShPtr()>;
 
-using NoopNode = ros_sec_test::attacks::noop::Component;
-using DiskNode = ros_sec_test::attacks::resources::disk::Component;
 using CPUNode = ros_sec_test::attacks::resources::cpu::Component;
+using DiskNode = ros_sec_test::attacks::resources::disk::Component;
+using MemoryNode = ros_sec_test::attacks::resources::memory::Component;
+using NoopNode = ros_sec_test::attacks::noop::Component;
 
 static const std::map<std::string, LifecycleNodeConstructorCallback>
 kNodeNameToFactoryCallback = {
   {"noop", []() -> LifecycleNodeShPtr {return std::make_shared<NoopNode>();}},
   {"resources_disk", []() -> LifecycleNodeShPtr {return std::make_shared<DiskNode>();}},
   {"resources_cpu", []() -> LifecycleNodeShPtr {return std::make_shared<CPUNode>();}},
+  {"resources_memory", []() -> LifecycleNodeShPtr {return std::make_shared<MemoryNode>();}},
 };
 
 namespace ros_sec_test
