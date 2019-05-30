@@ -18,6 +18,8 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
+#include "ros_sec_test/attacks/periodic_attack_component.hpp"
+
 namespace ros_sec_test
 {
 namespace attacks
@@ -37,7 +39,7 @@ namespace disk
  * When the node shutdowns, the node will attempt to delete the created
  * file to restore the system to its initial state.
  */
-class Component : public rclcpp_lifecycle::LifecycleNode
+class Component : public ros_sec_test::attacks::PeriodicAttackComponent
 {
 public:
   Component();
@@ -45,29 +47,14 @@ public:
   Component & operator=(const Component &) = delete;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_configure(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_activate(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_cleanup(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_shutdown(const rclcpp_lifecycle::State & /* state */ state) final;
 
 private:
   /// Grow the file size by 100MiB.
-  void run_periodic_attack() const;
+  void run_periodic_attack() override;
 
   /// File descriptor to the large file this attack tries to allocate.
   int fd_;
-
-  /// Timer controlling how often we increase the file size by 100MiB.
-  rclcpp::TimerBase::SharedPtr timer_;
 };
 
 }  // namespace disk

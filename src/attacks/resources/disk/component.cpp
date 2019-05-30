@@ -30,9 +30,12 @@
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "rcutils/logging_macros.h"
 
+#include "ros_sec_test/attacks/periodic_attack_component.hpp"
+
 using namespace std::chrono_literals;
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+using PeriodicAttackComponent = ros_sec_test::attacks::PeriodicAttackComponent;
 
 namespace ros_sec_test
 {
@@ -44,18 +47,7 @@ namespace disk
 {
 
 Component::Component()
-: rclcpp_lifecycle::LifecycleNode(
-    "resources_disk", "", rclcpp::NodeOptions().use_intra_process_comms(
-      true)) {}
-
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_configure(const rclcpp_lifecycle::State & /* state */)
-{
-  RCLCPP_INFO(get_logger(), "on_configure() is called.");
-  timer_ = this->create_wall_timer(
-    1s, [this] {run_periodic_attack();});
-  return CallbackReturn::SUCCESS;
-}
+: PeriodicAttackComponent("resources_disk") {}
 
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_activate(const rclcpp_lifecycle::State & /* state */)
@@ -65,30 +57,8 @@ Component::on_activate(const rclcpp_lifecycle::State & /* state */)
   return CallbackReturn::SUCCESS;
 }
 
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_deactivate(const rclcpp_lifecycle::State & /* state */)
-{
-  RCLCPP_INFO(get_logger(), "on_deactivate() is called.");
-  return CallbackReturn::SUCCESS;
-}
-
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
-{
-  RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
-  return CallbackReturn::SUCCESS;
-}
-
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
-{
-  timer_.reset();
-  RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
-  return CallbackReturn::SUCCESS;
-}
-
 void
-Component::run_periodic_attack() const
+Component::run_periodic_attack()
 {
   // Get file size
   struct stat stat_buf;

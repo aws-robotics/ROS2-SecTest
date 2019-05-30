@@ -13,6 +13,7 @@
 // limitations under the License.
 #ifndef ROS_SEC_TEST__ATTACKS__RESOURCES__CPU__COMPONENT_HPP_
 #define ROS_SEC_TEST__ATTACKS__RESOURCES__CPU__COMPONENT_HPP_
+
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -22,6 +23,8 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "rcpputils/thread_safety_annotations.hpp"
+
+#include "ros_sec_test/attacks/periodic_attack_component.hpp"
 
 namespace ros_sec_test
 {
@@ -41,7 +44,7 @@ namespace cpu
  * When the node shutdowns, the node will attempt to kill
  * the threads it is using.
  */
-class Component : public rclcpp_lifecycle::LifecycleNode
+class Component : public ros_sec_test::attacks::PeriodicAttackComponent
 {
 public:
   Component();
@@ -49,42 +52,21 @@ public:
   Component(const Component &) = delete;
   Component & operator=(const Component &) = delete;
 
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_configure(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_activate(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_cleanup(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_shutdown(const rclcpp_lifecycle::State & /* state */ state) final;
-
 private:
   /// Spawn another thread.
-  void run_periodic_attack();
+  void run_periodic_attack() override;
 
   /// Run an infinite loop of arbitrary work
   static void consume_cpu_resources();
 
   /// Join threads, clear vector, reset timer
-  void terminate_attack_and_cleanup_resources();
+  void terminate_attack_and_cleanup_resources() override;
 
   /// Maximum number of threads to spawn
   const std::size_t max_num_threads_;
 
-  /// Manages thread safety for threads_
-  mutable std::mutex mutex_;
-
   /// Threads used to occupy CPU resources
   std::vector<std::thread> threads_ RCPPUTILS_TSA_GUARDED_BY(mutex_);
-
-  /// Timer controlling how often we spawn another thread.
-  rclcpp::TimerBase::SharedPtr timer_ RCPPUTILS_TSA_GUARDED_BY(mutex_);
 };
 
 }  // namespace cpu

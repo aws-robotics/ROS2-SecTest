@@ -22,6 +22,7 @@
 #include "rclcpp_lifecycle/state.hpp"
 #include "rcpputils/thread_safety_annotations.hpp"
 
+#include "ros_sec_test/attacks/periodic_attack_component.hpp"
 
 namespace ros_sec_test
 {
@@ -42,7 +43,7 @@ namespace memory
  * When the node is killed it will attempt to free all
  * allocated memory
  */
-class Component : public rclcpp_lifecycle::LifecycleNode
+class Component : public ros_sec_test::attacks::PeriodicAttackComponent
 {
 public:
   Component();
@@ -51,27 +52,12 @@ public:
   Component(const Component &) = delete;
   Component & operator=(const Component &) = delete;
 
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_configure(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_activate(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_cleanup(const rclcpp_lifecycle::State & /* state */) final;
-
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-  on_shutdown(const rclcpp_lifecycle::State & /* state */ state) final;
-
 private:
   /// Allocate 10MiB of memory.
-  void run_periodic_attack();
+  void run_periodic_attack() override;
 
   /// Stop allocaing new memory and free already allocated memory
-  void terminate_attack_and_clear_resources();
+  void terminate_attack_and_cleanup_resources() override;
 
   /// Amount of memory currently allocated in bytes
   size_t num_bytes_allocated_;
@@ -81,12 +67,6 @@ private:
 
   /// Allocated memory block locked to physical memory
   void * memory_block_;
-
-  // Manages thread safety for memory_block_ and num_bytes_allocated_
-  mutable std::mutex mutex_;
-
-  /// Timer controlling how often we allocate more memory.
-  rclcpp::TimerBase::SharedPtr timer_ RCPPUTILS_TSA_GUARDED_BY(mutex_);
 };
 
 }  // namespace memory
