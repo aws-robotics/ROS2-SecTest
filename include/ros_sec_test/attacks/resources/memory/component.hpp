@@ -54,10 +54,10 @@ public:
 
 private:
   /// Allocate 10MiB of memory.
-  void run_periodic_attack() override;
+  void run_periodic_attack() final;
 
   /// Stop allocaing new memory and free already allocated memory
-  void terminate_attack_and_cleanup_resources() override;
+  void terminate_attack_and_cleanup_resources() final;
 
   /// Amount of memory currently allocated in bytes
   size_t num_bytes_allocated_;

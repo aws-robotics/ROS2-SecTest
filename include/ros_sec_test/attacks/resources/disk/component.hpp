@@ -51,7 +51,7 @@ public:
 
 private:
   /// Grow the file size by 100MiB.
-  void run_periodic_attack() override;
+  void run_periodic_attack() final;
 
   /// File descriptor to the large file this attack tries to allocate.
   int fd_;

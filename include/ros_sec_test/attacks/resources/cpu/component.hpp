@@ -54,13 +54,13 @@ public:
 
 private:
   /// Spawn another thread.
-  void run_periodic_attack() override;
+  void run_periodic_attack() final;
 
   /// Run an infinite loop of arbitrary work
   static void consume_cpu_resources();
 
   /// Join threads, clear vector, reset timer
-  void terminate_attack_and_cleanup_resources() override;
+  void terminate_attack_and_cleanup_resources() final;
 
   /// Maximum number of threads to spawn
   const std::size_t max_num_threads_;
