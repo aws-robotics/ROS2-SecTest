@@ -38,9 +38,12 @@
 #include "rcutils/logging_macros.h"
 #include "rcpputils/thread_safety_annotations.hpp"
 
+#include "ros_sec_test/attacks/periodic_attack_component.hpp"
+
 using namespace std::chrono_literals;
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+using PeriodicAttackComponent = ros_sec_test::attacks::PeriodicAttackComponent;
 
 // Amount of additional memory in bytes to allocate each time the attack loop is allocated.
 static constexpr std::size_t kBytesAllocatedPerAttack = 100 * 1024 * 1024;
@@ -58,64 +61,17 @@ Component::Component()
 : Component(SIZE_MAX) {}
 
 Component::Component(std::size_t max_num_bytes_allocated)
-: rclcpp_lifecycle::LifecycleNode(
-    "resources_memory", "", rclcpp::NodeOptions().use_intra_process_comms(
-      true)),
+: PeriodicAttackComponent("resources_memory"),
   num_bytes_allocated_(0),
   max_num_bytes_allocated_(max_num_bytes_allocated),
-  memory_block_(),
-  timer_() {}
+  memory_block_() {}
 
 Component::~Component()
 {
   free(memory_block_);
 }
 
-
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_configure(const rclcpp_lifecycle::State & /* state */)
-RCPPUTILS_TSA_REQUIRES(!mutex_)
-{
-  RCLCPP_INFO(get_logger(), "on_configure() is called.");
-  auto callback = [this] {run_periodic_attack();};
-  {
-    std::lock_guard<std::mutex> lock(mutex_);
-    timer_ = this->create_wall_timer(1s, std::move(callback));
-  }
-  return CallbackReturn::SUCCESS;
-}
-
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_activate(const rclcpp_lifecycle::State & /* state */)
-{
-  RCLCPP_INFO(get_logger(), "on_activate() is called.");
-  return CallbackReturn::SUCCESS;
-}
-
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_deactivate(const rclcpp_lifecycle::State & /* state */)
-{
-  RCLCPP_INFO(get_logger(), "on_deactivate() is called.");
-  return CallbackReturn::SUCCESS;
-}
-
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_cleanup(const rclcpp_lifecycle::State & /* state */)
-{
-  RCLCPP_INFO(get_logger(), "on_cleanup() is called.");
-  terminate_attack_and_clear_resources();
-  return CallbackReturn::SUCCESS;
-}
-
-rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
-Component::on_shutdown(const rclcpp_lifecycle::State & /* state */)
-{
-  RCLCPP_INFO(get_logger(), "on_shutdown() is called.");
-  terminate_attack_and_clear_resources();
-  return CallbackReturn::SUCCESS;
-}
-
-void Component::terminate_attack_and_clear_resources() RCPPUTILS_TSA_REQUIRES(!mutex_)
+void Component::terminate_attack_and_cleanup_resources() RCPPUTILS_TSA_REQUIRES(!mutex_)
 {
   {
     std::lock_guard<std::mutex> lock(mutex_);

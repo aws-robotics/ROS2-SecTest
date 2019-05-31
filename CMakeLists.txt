@@ -55,6 +55,11 @@ add_library(
 )
 ament_target_dependencies(ros_sec_test_utilities "rclcpp" "rclcpp_lifecycle")
 
+add_library(
+    periodic_attack_component
+    SHARED
+    src/attacks/periodic_attack_component.cpp
+)
 # Define all attacks.
 function(custom_component target file_path component)
     add_library(${target} SHARED ${file_path})
@@ -70,13 +75,24 @@ custom_component(
 custom_component(
     cpu_component src/attacks/resources/cpu/component.cpp
     ros_sec_test::attacks::resources::cpu::Component)
+target_link_libraries(
+    cpu_component
+    periodic_attack_component
+)
 custom_component(
     disk_component src/attacks/resources/disk/component.cpp
     ros_sec_test::attacks::resources::disk::Component)
+target_link_libraries(
+    disk_component
+    periodic_attack_component
+)
 custom_component(
     memory_component src/attacks/resources/memory/component.cpp
     ros_sec_test::attacks::resources::memory::Component)
-
+target_link_libraries(
+    memory_component
+    periodic_attack_component
+)
 # Define the attack library containing all attack nodes and the factory.
 add_library(
     ros_sec_test_attacks
