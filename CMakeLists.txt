@@ -153,6 +153,9 @@ if(BUILD_TESTING)
   ament_add_gtest(test_client_utils test/ros_sec_test/utilities/test_client_utils.cpp)
   target_link_libraries(test_client_utils ros_sec_test_utilities)
 
+  ament_add_gtest(test_runner test/ros_sec_test/runner/test_runner.cpp)
+  target_link_libraries(test_runner runner noop_component test_utilities)
+
   ament_add_gtest(test_attack_noop test/ros_sec_test/attacks/noop/test_component.cpp)
   target_link_libraries(test_attack_noop noop_component ros_sec_test_utilities test_utilities)
 
