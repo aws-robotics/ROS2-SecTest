@@ -111,6 +111,7 @@ ament_target_dependencies(ros_sec_test_attacks "class_loader" "rclcpp" "rclcpp_l
 install(TARGETS
   ros_sec_test_attacks
   ros_sec_test_utilities
+  periodic_attack_component
   noop_component
   cpu_component
   disk_component
@@ -136,21 +137,33 @@ install(TARGETS runner DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY examples DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
+  add_library(
+      test_utilities
+      SHARED
+      test/test_utilities/utility_fixtures.cpp
+  )
+  target_include_directories(test_utilities PUBLIC ${PROJECT_SOURCE_DIR}/test/include)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 
-  ament_add_gtest(test_service_utils test/utilities/test_service_utils.cpp)
+  ament_add_gtest(test_service_utils test/ros_sec_test/utilities/test_service_utils.cpp)
   target_link_libraries(test_service_utils ros_sec_test_utilities)
 
-  ament_add_gtest(test_client_utils test/utilities/test_client_utils.cpp)
+  ament_add_gtest(test_client_utils test/ros_sec_test/utilities/test_client_utils.cpp)
   target_link_libraries(test_client_utils ros_sec_test_utilities)
 
-  ament_add_gtest(test_attack_resources_cpu test/attacks/resources/cpu/test_component.cpp)
-  target_link_libraries(test_attack_resources_cpu cpu_component ros_sec_test_attacks ros_sec_test_utilities)
+  ament_add_gtest(test_attack_noop test/ros_sec_test/attacks/noop/test_component.cpp)
+  target_link_libraries(test_attack_noop noop_component ros_sec_test_utilities test_utilities)
 
-  ament_add_gtest(test_attack_resources_memory test/attacks/resources/memory/test_component.cpp)
-  target_link_libraries(test_attack_resources_memory memory_component ros_sec_test_attacks ros_sec_test_utilities)
+  ament_add_gtest(test_attack_resources_cpu test/ros_sec_test/attacks/resources/cpu/test_component.cpp)
+  target_link_libraries(test_attack_resources_cpu cpu_component ros_sec_test_attacks ros_sec_test_utilities test_utilities)
+
+  ament_add_gtest(test_attack_resources_disk test/ros_sec_test/attacks/resources/disk/test_component.cpp)
+  target_link_libraries(test_attack_resources_disk disk_component ros_sec_test_attacks ros_sec_test_utilities test_utilities)
+
+  ament_add_gtest(test_attack_resources_memory test/ros_sec_test/attacks/resources/memory/test_component.cpp)
+  target_link_libraries(test_attack_resources_memory memory_component ros_sec_test_attacks ros_sec_test_utilities test_utilities)
 endif()
 
 # since the package installs libraries without exporting them
@@ -159,6 +172,5 @@ if(NOT WIN32)
   ament_environment_hooks(
     "${ament_cmake_package_templates_ENVIRONMENT_HOOK_LIBRARY_PATH}")
 endif()
-
 
 ament_package()
