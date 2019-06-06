@@ -19,7 +19,7 @@ find_package(rcpputils REQUIRED)
 
 # Enable strict compiler flags if possible.
 include(CheckCXXCompilerFlag)
-set(FLAGS -pedantic -Wno-long-long -Wall -Wextra -Wcast-align -Wcast-qual -Wformat -Wwrite-strings -Wconversion -Wmissing-declarations)
+set(FLAGS -pedantic -Wno-long-long -Wall -Wextra -Wcast-align -Wcast-qual -Wformat -Wwrite-strings -Wconversion)
 foreach(FLAG ${FLAGS})
   check_cxx_compiler_flag(${FLAG} R${FLAG})
   if(${R${FLAG}})
@@ -108,9 +108,22 @@ target_link_libraries(
 )
 ament_target_dependencies(ros_sec_test_attacks "class_loader" "rclcpp" "rclcpp_lifecycle")
 
+# Define the runner node that manages executing attacks
+add_library(
+  runner
+  src/runner/runner.cpp
+)
+target_link_libraries(
+  runner
+  ros_sec_test_attacks
+  ros_sec_test_utilities
+)
+ament_target_dependencies(runner "rclcpp" "rclcpp_lifecycle")
+
 install(TARGETS
   ros_sec_test_attacks
   ros_sec_test_utilities
+  runner
   periodic_attack_component
   noop_component
   cpu_component
@@ -120,32 +133,41 @@ install(TARGETS
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 
-# Define the runner node.
+# Define the main function
 add_executable(
-    runner
-    src/runner/main.cpp
-    src/runner/runner.cpp
+  ros_sec_test
+  src/runner/main.cpp
 )
 target_link_libraries(
-    runner
-    ros_sec_test_attacks
-    ros_sec_test_utilities
+  ros_sec_test
+  runner
 )
-ament_target_dependencies(runner "rclcpp" "rclcpp_lifecycle")
-install(TARGETS runner DESTINATION lib/${PROJECT_NAME})
+ament_target_dependencies(ros_sec_test "rclcpp")
+
+install(TARGETS ros_sec_test DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY examples DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_gmock REQUIRED)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+
+  ament_find_gmock()
+  include_directories(${GMOCK_INLCUDE_DIRS})
+  if(DEFINED GMOCK_LIBRARIES)
+    set(GMOCK_LIBRARY ${GMOCK_LIBRARIES})
+  else()
+    set(GMOCK_LIBRARY gmock)
+  endif()
+
   add_library(
       test_utilities
       SHARED
       test/test_utilities/utility_fixtures.cpp
   )
   target_include_directories(test_utilities PUBLIC ${PROJECT_SOURCE_DIR}/test/include)
-  find_package(ament_cmake_gtest REQUIRED)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
 
   ament_add_gtest(test_service_utils test/ros_sec_test/utilities/test_service_utils.cpp)
   target_link_libraries(test_service_utils ros_sec_test_utilities)
@@ -153,8 +175,8 @@ if(BUILD_TESTING)
   ament_add_gtest(test_client_utils test/ros_sec_test/utilities/test_client_utils.cpp)
   target_link_libraries(test_client_utils ros_sec_test_utilities)
 
-  ament_add_gtest(test_runner test/ros_sec_test/runner/test_runner.cpp)
-  target_link_libraries(test_runner runner noop_component test_utilities)
+  ament_add_gmock(test_runner test/ros_sec_test/runner/test_runner.cpp)
+  target_link_libraries(test_runner runner periodic_attack_component test_utilities ${GMOCK_LIBRARY})
 
   ament_add_gtest(test_attack_noop test/ros_sec_test/attacks/noop/test_component.cpp)
   target_link_libraries(test_attack_noop noop_component ros_sec_test_utilities test_utilities)

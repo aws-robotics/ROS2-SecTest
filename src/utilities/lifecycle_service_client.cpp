@@ -86,7 +86,7 @@ bool LifecycleServiceClient::configure()
 bool LifecycleServiceClient::shutdown()
 {
   return change_state(rclcpp_lifecycle::Transition(lifecycle_msgs::msg::Transition::
-           TRANSITION_DEACTIVATE));
+           TRANSITION_ACTIVE_SHUTDOWN));
 }
 
 }  // namespace utilities
