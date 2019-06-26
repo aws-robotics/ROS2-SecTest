@@ -155,13 +155,13 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 
   ament_find_gmock()
-  include_directories(${GMOCK_INLCUDE_DIRS})
-  if(DEFINED GMOCK_LIBRARIES)
-    set(GMOCK_LIBRARY ${GMOCK_LIBRARIES})
-  else()
-    set(GMOCK_LIBRARY gmock)
-  endif()
-
+  #include_directories(${GMOCK_INLCUDE_DIRS})
+  #if(DEFINED GMOCK_LIBRARIES)
+  #  set(GMOCK_LIBRARY ${GMOCK_LIBRARIES})
+  #else()
+  #  set(GMOCK_LIBRARY gmock)
+  #endif()
+  set(GMOCK_LIBRARY gmock)
   add_library(
       test_utilities
       SHARED

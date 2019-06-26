@@ -36,25 +36,24 @@ namespace attacks
 class PeriodicAttackComponent : public rclcpp_lifecycle::LifecycleNode
 {
 public:
-  PeriodicAttackComponent();
   explicit PeriodicAttackComponent(std::string node_name);
   PeriodicAttackComponent(const PeriodicAttackComponent &) = delete;
   PeriodicAttackComponent & operator=(const PeriodicAttackComponent &) = delete;
   virtual ~PeriodicAttackComponent() = default;
 
-  virtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State & /* state */);
 
-  virtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_activate(const rclcpp_lifecycle::State & /* state */);
 
-  virtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_deactivate(const rclcpp_lifecycle::State & /* state */);
 
-  virtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_cleanup(const rclcpp_lifecycle::State & /* state */);
 
-  virtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_shutdown(const rclcpp_lifecycle::State & /* state */ state);
 
 protected:

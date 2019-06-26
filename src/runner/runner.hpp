@@ -51,7 +51,6 @@ public:
    * CAVEAT: rclcpp::init() *must* be called before instantiating this object.
    */
   Runner();
-
   /// Use a vector of already instantiated nodes.
   /**
    * CAVEAT: rclcpp::init() *must* be called before instantiating this object.

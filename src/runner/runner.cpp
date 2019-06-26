@@ -21,8 +21,8 @@
 
 #include "lifecycle_msgs/msg/state.hpp"
 #include "rclcpp/logger.hpp"
-#include "rclcpp_lifecycle/state.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "rclcpp_lifecycle/state.hpp"
 #include "ros_sec_test/attacks/factory_utils.hpp"
 
 using rclcpp::ParameterValue;
