@@ -155,13 +155,6 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 
   ament_find_gmock()
-  #include_directories(${GMOCK_INLCUDE_DIRS})
-  #if(DEFINED GMOCK_LIBRARIES)
-  #  set(GMOCK_LIBRARY ${GMOCK_LIBRARIES})
-  #else()
-  #  set(GMOCK_LIBRARY gmock)
-  #endif()
-  set(GMOCK_LIBRARY gmock)
   add_library(
       test_utilities
       SHARED
@@ -176,7 +169,7 @@ if(BUILD_TESTING)
   target_link_libraries(test_client_utils ros_sec_test_utilities)
 
   ament_add_gmock(test_runner test/ros_sec_test/runner/test_runner.cpp)
-  target_link_libraries(test_runner runner periodic_attack_component test_utilities ${GMOCK_LIBRARY})
+  target_link_libraries(test_runner runner periodic_attack_component test_utilities)
 
   ament_add_gtest(test_attack_noop test/ros_sec_test/attacks/noop/test_component.cpp)
   target_link_libraries(test_attack_noop noop_component ros_sec_test_utilities test_utilities)
