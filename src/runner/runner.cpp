@@ -21,6 +21,7 @@
 
 #include "lifecycle_msgs/msg/state.hpp"
 #include "rclcpp/logger.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "ros_sec_test/attacks/factory_utils.hpp"
 
@@ -54,6 +55,30 @@ Runner::Runner()
     warn_user_no_attack_nodes_passed();
   } else {
     initialize_attack_nodes(node_names);
+  }
+}
+
+Runner::Runner(const std::vector<rclcpp_lifecycle::LifecycleNode::SharedPtr> & attack_nodes)
+: node_(rclcpp::Node::make_shared("attacker_node", "",
+    rclcpp::NodeOptions().use_intra_process_comms(true))),
+  attack_nodes_(),
+  executor_(),
+  logger_(rclcpp::get_logger("Runner"))
+{
+  RCLCPP_INFO(logger_, "Initializing Runner");
+  executor_.add_node(node_);
+  if (attack_nodes.empty()) {
+    warn_user_no_attack_nodes_passed();
+  } else {
+    for (const auto & attack_node : attack_nodes) {
+      AttackNodeData node_data = {
+        attack_node,
+        std::make_shared<LifecycleServiceClient>(node_.get(), attack_node->get_name())
+      };
+      attack_nodes_.emplace_back(std::move(node_data));
+      executor_.add_node(attack_node->get_node_base_interface());
+      RCLCPP_INFO(logger_, "Adding attack node '%s'", attack_node->get_name());
+    }
   }
 }
 

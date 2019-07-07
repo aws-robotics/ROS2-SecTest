@@ -1,6 +1,7 @@
 # ROS2 SecTest
 
 **This code is experimental and uses features from ROS2 D**
+
 ROS2 has minimal security or limitations on node permissions by default. This package is meant
 to demonstrate ways a malicious or misconfigured node could harm the operations of a ROS2 system
 and demonstrate mitigations for those "attacks".
@@ -36,7 +37,7 @@ source install/local_setup.sh
 
 Run the noop demo
 ```bash
-ros2 run ros_sec_test runner __params:=`ros2 pkg prefix ros_sec_test`/share/ros_sec_test/examples/params.yaml
+ros2 run ros_sec_test ros_sec_test __params:=`ros2 pkg prefix ros_sec_test`/share/ros_sec_test/examples/params.yaml
 ```
 
 You should see something like the following output which demonstrates that

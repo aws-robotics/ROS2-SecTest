@@ -46,11 +46,16 @@ namespace runner
 class Runner
 {
 public:
-  /// Instantiate all nodes without activating them.
+  /// Instantiate all nodes from parameter without activating them.
   /**
    * CAVEAT: rclcpp::init() *must* be called before instantiating this object.
    */
   Runner();
+  /// Use a vector of already instantiated nodes.
+  /**
+   * CAVEAT: rclcpp::init() *must* be called before instantiating this object.
+   */
+  explicit Runner(const std::vector<rclcpp_lifecycle::LifecycleNode::SharedPtr> & attack_nodes);
 
   Runner(const Runner &) = delete;
   Runner & operator=(const Runner &) = delete;

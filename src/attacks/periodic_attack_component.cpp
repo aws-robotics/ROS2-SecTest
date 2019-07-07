@@ -38,7 +38,6 @@ namespace ros_sec_test
 {
 namespace attacks
 {
-
 PeriodicAttackComponent::PeriodicAttackComponent(std::string node_name)
 : rclcpp_lifecycle::LifecycleNode(
     node_name, "", rclcpp::NodeOptions().use_intra_process_comms(

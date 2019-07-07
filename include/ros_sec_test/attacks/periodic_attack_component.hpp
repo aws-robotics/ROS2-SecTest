@@ -39,6 +39,7 @@ public:
   explicit PeriodicAttackComponent(std::string node_name);
   PeriodicAttackComponent(const PeriodicAttackComponent &) = delete;
   PeriodicAttackComponent & operator=(const PeriodicAttackComponent &) = delete;
+  virtual ~PeriodicAttackComponent() = default;
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State & /* state */);
