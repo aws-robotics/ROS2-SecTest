@@ -30,10 +30,13 @@ using LifecycleServiceClient = ros_sec_test::utilities::LifecycleServiceClient;
 using ros_sec_test::attacks::build_attack_node_from_name;
 
 static const char * const kAttackNodeNamesParameter = "attack_nodes";
+static const char * const kAttackDurationParameter = "attack_duration";
 
 // By default, do not run any attack and print a message explaining to the user how
 // to use the node.
 static const std::vector<std::string> kDefaultAttackNodeNames = {};
+// By default runs indefinitely
+static const int kDefaultAttackDurationSeconds = 0;
 
 namespace ros_sec_test
 {
@@ -109,6 +112,12 @@ std::vector<std::string> Runner::retrieve_attack_nodes_names()
   return node_->get_parameter(kAttackNodeNamesParameter).as_string_array();
 }
 
+std::chrono::seconds Runner::retrieve_attack_duration_s()
+{
+  node_->declare_parameter(kAttackDurationParameter, ParameterValue(kDefaultAttackDurationSeconds));
+  return std::chrono::seconds(node_->get_parameter(kAttackDurationParameter).as_int());
+}
+
 void Runner::spin()
 {
   RCLCPP_INFO(logger_, "Spinning started");
@@ -136,6 +145,15 @@ void Runner::start_and_stop_all_nodes()
     {
       return;
     }
+  }
+  auto attack_duration = retrieve_attack_duration_s();
+  RCLCPP_INFO(logger_, "Attack duration set to %d", attack_duration.count());
+  if (0 > attack_duration.count()) {
+    while (rclcpp::ok()) {
+      rclcpp::sleep_for(std::chrono::seconds(1));
+    }
+  } else {
+    rclcpp::sleep_for(attack_duration);
   }
   for (const auto & node_data : attack_nodes_) {
     RCLCPP_INFO(logger_, "Shutting-down attack node '%s'", node_data.node->get_name());

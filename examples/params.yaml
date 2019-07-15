@@ -2,3 +2,4 @@ attacker_node:
   ros__parameters:
     attack_nodes:
         - 'noop'
+    attack_duration: 1
