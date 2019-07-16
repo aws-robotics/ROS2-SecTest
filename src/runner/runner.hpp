@@ -93,7 +93,7 @@ private:
 
   /// Read the attack duration in seconds from the node parameter.
   /**
-   * \return Duration of attack.
+   * \return Duration of attack in seconds.
    */
   std::chrono::seconds retrieve_attack_duration_s();
 
