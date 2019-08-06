@@ -53,7 +53,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 Component::on_activate(const rclcpp_lifecycle::State & /* state */)
 {
   RCLCPP_INFO(get_logger(), "on_activate() is called.");
-  fd_ = open("attack.dat", O_WRONLY | O_CREAT);
+  fd_ = open("attack.dat", O_WRONLY | O_CREAT, 0600);
   return CallbackReturn::SUCCESS;
 }
 
